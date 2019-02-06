@@ -9,10 +9,10 @@ async function uploadS3Object(req, res, next, bucketName) {
 
   const s3Params = {
     Bucket: bucketName,
-    Key: process.env.AWS_ACCESS_KEY_ID || keyName,
+    Key: keyName,
     Expires: 60,
     ContentType: contentType,
-    ACL: 'public-read',
+    ACL: 'bucket-owner-full-control',
   }
   s3.getSignedUrl('putObject', s3Params, (err, url) => {
     if (err) return next(err)

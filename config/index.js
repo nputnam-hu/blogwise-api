@@ -1,5 +1,5 @@
 module.exports = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3001,
   S3: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || null,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || null,
