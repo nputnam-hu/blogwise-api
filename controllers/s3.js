@@ -4,23 +4,20 @@ const {
 const s3 = require('../config/s3')
 
 async function uploadS3Object(req, res, next, bucketName) {
-  try {
-    const { fileName, contentType } = req.body
-    const keyName = `${Date.now()}_${fileName}`
+  const { fileName, contentType } = req.body
+  const keyName = `${Date.now()}_${fileName}`
 
-    const s3Params = {
-      Bucket: bucketName,
-      Key: keyName,
-      Expires: 60,
-      ContentType: contentType,
-      ACL: 'public-read',
-    }
-    const url = s3.getSignedUrl('putObject', s3Params)
-
-    return res.json(url)
-  } catch (err) {
-    return next(err)
+  const s3Params = {
+    Bucket: bucketName,
+    Key: process.env.AWS_ACCESS_KEY_ID || keyName,
+    Expires: 60,
+    ContentType: contentType,
+    ACL: 'public-read',
   }
+  s3.getSignedUrl('putObject', s3Params, (err, url) => {
+    if (err) return next(err)
+    return res.json(url)
+  })
 }
 
 exports.uploadLogo = (req, res, next) =>
