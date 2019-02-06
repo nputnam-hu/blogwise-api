@@ -5,7 +5,7 @@ const s3 = require('../config/s3')
 
 async function uploadS3Object(req, res, next, bucketName) {
   const { fileName, contentType } = req.body
-  const keyName = `${Date.now()}_${fileName}`
+  const keyName = fileName
 
   const s3Params = {
     Bucket: bucketName,
