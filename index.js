@@ -1,16 +1,19 @@
+require('dotenv').config()
 const express = require('express')
 const path = require('path')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 
+const models = require('./models')
 const config = require('./config')
 const routes = require('./routes')
 
 const app = express()
 
-// run init script
-if (app.get('env') !== 'production') app.use(logger('dev'))
+if (app.get('env') !== 'production') {
+  app.use(logger('dev'))
+}
 
 // Middleware to handle CORS
 app.use((req, res, next) => {
@@ -59,20 +62,22 @@ app.use((req, res, next) => {
 
 // development error handler
 if (app.get('env') === 'development') {
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     console.error(err)
     res.status(err.status || 500).send()
   })
 }
 
 // production error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   res.status(err.status || 500).send()
 })
 
-const server = app.listen(config.port)
-console.log(
-  'Listening at http://localhost:%s in %s mode',
-  server.address().port,
-  app.get('env'),
-)
+models.sequelize.sync().then(() => {
+  const server = app.listen(config.port)
+  console.log(
+    'Listening at http://localhost:%s in %s mode',
+    server.address().port,
+    app.get('env'),
+  )
+})

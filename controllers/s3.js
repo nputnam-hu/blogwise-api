@@ -22,6 +22,3 @@ async function uploadS3Object(req, res, next, bucketName) {
 
 exports.uploadLogo = (req, res, next) =>
   uploadS3Object(req, res, next, buckets.logos)
-
-exports.uploadJSON = (req, res, next) =>
-  uploadS3Object(req, res, next, buckets.json)
