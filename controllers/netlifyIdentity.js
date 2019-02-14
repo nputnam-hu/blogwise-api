@@ -3,9 +3,40 @@ const errors = require('../errors')
 const config = require('../config')
 const jwt = require('jwt-simple')
 
-exports.loginUser = async (req, res, next) => {
-  console.log(req.body)
-  return res.sendStatus(200)
+async function handlePassword(email, password, res, next) {
+  try {
+    const user = await User.findOne({ where: { email } })
+    const isMatch = await user.comparePassword(password)
+    if (!isMatch)
+      return res
+        .status(400)
+        .send(errors.makeError(errors.err.INCORRECT_PASSWORD))
+    const payload = {
+      id: user.id,
+      email: user.email,
+    }
+
+    const token = jwt.encode(payload, config.tokenSecret)
+    user.token = token
+    await user.save()
+    return res.send(token)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+function handleToken(username, password, res, next) {}
+
+exports.loginUser = (req, res, next) => {
+  const { grant_type: grantType, username, password } = req.body
+  switch (grantType) {
+    case 'password':
+      return handlePassword(username, password, res, next)
+    case 'refresh_token':
+      return handleToken(username, password, res, next)
+    default:
+      return res.sendStatus(404)
+  }
 }
 
 exports.validateToken = async (req, res, next) => {
