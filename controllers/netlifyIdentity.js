@@ -34,6 +34,7 @@ function handleToken(username, password, res, next) {}
 
 exports.loginUser = (req, res, next) => {
   const { grant_type: grantType, username, password } = req.body
+  console.log(username, password, req.body)
   switch (grantType) {
     case 'password':
       return handlePassword(username, password, res, next)
