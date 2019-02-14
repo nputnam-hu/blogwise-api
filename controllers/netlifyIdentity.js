@@ -6,6 +6,11 @@ const jwt = require('jwt-simple')
 async function handlePassword(email, password, res, next) {
   try {
     const user = await User.findOne({ where: { email } })
+    if (!user) {
+      return res
+        .status(400)
+        .send(errors.makeError(errors.err.OBJECT_NOT_FOUND, { name: 'user' }))
+    }
     const isMatch = await user.comparePassword(password)
     if (!isMatch)
       return res
