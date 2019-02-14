@@ -5,8 +5,8 @@ const jwt = require('jwt-simple')
 
 async function handlePassword(email, password, res, next) {
   try {
-    const user = await User.findOne({ email })
-    console.log('USER, user', user)
+    const user = await User.findOne({ where: { email } })
+    console.log('USER, user', user, email)
     if (!user) {
       return res
         .status(400)
