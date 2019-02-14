@@ -25,7 +25,11 @@ async function handlePassword(email, password, res, next) {
     const token = jwt.encode(payload, config.tokenSecret)
     user.token = token
     await user.save()
-    return res.send(token)
+    return res.json({
+      Token: token,
+      TokenType: 'bearer',
+      ExpiresIn: 3600,
+    })
   } catch (err) {
     return next(err)
   }
