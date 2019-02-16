@@ -19,6 +19,8 @@ router
     users.creatFirstUser,
     organizations.createOrganization,
   )
+  .get(auth.validateAdmin, organizations.getOrganization)
+  .put(auth.validateAdmin, organizations.updateOrganization)
 
 router
   .route('/organizations/users')
@@ -30,9 +32,15 @@ router
 
 router
   .route('/users')
-  .post(auth.validateAdmin, users.createUser)
-  .put(auth.validateAdmin, users.updateUser)
+  .put(auth.validateUser, users.updateUser)
   .get(auth.validateSuperAdmin, users.getAllUsers)
+
+router
+  .route('/users/invite')
+  .post(auth.validateAdmin, users.inviteUser)
+  .put(users.registerInvitedUser)
+
+router.route('/users/me').get(auth.validateUser, users.getUser)
 
 /*
  * Blog Routes

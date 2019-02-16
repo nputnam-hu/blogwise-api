@@ -6,7 +6,6 @@ const jwt = require('jwt-simple')
 async function handlePassword(email, password, res, next) {
   try {
     const user = await User.findOne({ where: { email } })
-    console.log('USER, user', user, email)
     if (!user) {
       return res
         .status(400)
@@ -51,7 +50,6 @@ exports.loginUser = (req, res, next) => {
 }
 
 exports.validateToken = async (req, res, next) => {
-  return next()
   const token = req.headers.Authorization.split(' ')[1]
   let decoded
   try {

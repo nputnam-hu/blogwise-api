@@ -16,6 +16,26 @@ exports.createOrganization = async (req, res, next) => {
   }
 }
 
+exports.getOrganization = async (req, res, next) => {
+  try {
+    const org = await Organization.findById(req.user.organizationId)
+    return res.json(org)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.updateOrganization = async (req, res, next) => {
+  try {
+    await Organization.update(req.body, {
+      where: { id: req.user.organizationId },
+    })
+    return res.sendStatus(200)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 exports.getOrganizationUsers = async (req, res, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)

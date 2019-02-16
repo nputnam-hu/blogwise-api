@@ -30,7 +30,7 @@ exports.loginUser = async (req, res, next) => {
     const token = jwt.encode(payload, config.tokenSecret)
     user.token = token
     await user.save()
-    return res.json({ token, accessLevel: user.accessLevel })
+    return res.json({ token })
   } catch (err) {
     return next(err)
   }
@@ -80,6 +80,10 @@ async function validateToken(req, res, next, options) {
 
 exports.validateAdmin = (req, res, next) => {
   validateToken(req, res, next, { adminRequired: true })
+}
+
+exports.validateUser = (req, res, next) => {
+  validateToken(req, res, next, {})
 }
 
 exports.validateSuperAdmin = (req, res, next) => {

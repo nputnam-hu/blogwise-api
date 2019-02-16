@@ -33,6 +33,10 @@ const err = {
     code: 1007,
     msg: 'The passed in token is expired.',
   },
+  MAX_USERS_REACHED: {
+    code: 1008,
+    msg: 'Your plan has reached the max number of staff users allowed',
+  },
   MALFORMED_BODY: {
     code: 2001,
     msg:

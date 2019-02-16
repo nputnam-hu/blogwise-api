@@ -11,6 +11,10 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     surveyAnswer: {
       type: DataTypes.STRING,
     },
+    plan: {
+      type: DataTypes.STRING,
+      enum: ['FREE', 'STARTER', 'GROWTH', 'ENTERPRISE'],
+    },
   })
 
   Organization.associate = function buildOrganization(models) {

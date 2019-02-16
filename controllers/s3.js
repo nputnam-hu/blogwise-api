@@ -1,7 +1,7 @@
 const {
-  S3: { buckets },
+  AWS: { buckets },
 } = require('../config')
-const s3 = require('../config/s3')
+const { s3 } = require('../config/aws')
 
 async function uploadS3Object(req, res, next, bucketName) {
   const { fileName, contentType } = req.body

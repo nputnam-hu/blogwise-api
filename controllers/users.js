@@ -1,5 +1,8 @@
-const { User, Organization } = require('../models')
 const jwt = require('jwt-simple')
+const { User, Organization } = require('../models')
+const { ses } = require('../config/aws')
+const { allowedUsers } = require('../utils')
+const inviteUser = require('../emails/inviteUser')
 const config = require('../config')
 const errors = require('../errors')
 
@@ -33,28 +36,75 @@ exports.creatFirstUser = async (req, res, next) => {
   }
 }
 
-exports.createUser = async (req, res, next) => {
+exports.inviteUser = async (req, res, next) => {
   const validationError = errors.missingFields(req.body, [
     'name',
     'email',
     'type',
   ])
   if (validationError) return res.status(400).send(validationError)
-  const newUser = await User.build(req.body)
-  if (!newUser) {
-    return res.status(400).send('Could not create user')
-  }
   try {
-    await newUser.save()
+    const newUser = await User.build(req.body)
+    if (!newUser) {
+      return res.status(400).send('Could not create user')
+    }
     const org = await Organization.findById(req.user.organizationId)
+    const orgUsers = await org.getUsers()
+    if (orgUsers.length + 1 > allowedUsers(org.plan)) {
+      return res
+        .status(400)
+        .send(errors.makeError(errors.err.MAX_USERS_REACHED))
+    }
+    await newUser.save()
     await org.addUser(newUser)
-
+    const params = {
+      Destination: {
+        ToAddresses: [req.body.email],
+      },
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: inviteUser(newUser.id),
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `${req.user.name} has invited you to join their Blogwise Team`,
+        },
+      },
+      Source: 'Blogwise Team <support@blogwise.co>',
+    }
+    await ses.sendEmail(params).promise()
     return res.json({ user: newUser })
   } catch (err) {
     console.error(err)
-    if (err.code === 11000)
+    if (err.name == 'SequelizeUniqueConstraintError') {
       return res.status(400).send(errors.makeError(errors.err.EXISTING_EMAIL))
-    return res.status(500).send(errors.makeError(errors.err.SERVER_ERROR))
+    }
+    return next(err)
+  }
+}
+
+exports.registerInvitedUser = async (req, res, next) => {
+  const validationError = errors.missingFields(req.body, ['id', 'password'])
+  if (validationError) return res.status(400).send(validationError)
+  try {
+    const user = await User.findById(req.body.id)
+    if (user.token) {
+      return res.status(400).send('User already has been registered')
+    }
+    const payload = {
+      id: user.id,
+      email: user.email,
+    }
+    const token = jwt.encode(payload, config.tokenSecret)
+    user.password = req.body.password
+    user.token = token
+    await user.save()
+    return res.json({ token, type: user.type })
+  } catch (err) {
+    return next(err)
   }
 }
 
@@ -63,14 +113,10 @@ exports.getAllUsers = async (_, res) => {
   return res.json(users)
 }
 
+exports.getUser = (req, res) => res.json(req.user)
+
 exports.updateUser = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, [
-    'name',
-    'bio',
-    'type',
-    'headshotUri',
-    'id',
-  ])
+  const validationError = errors.missingFields(req.body, ['id'])
   if (validationError) return res.status(400).send(validationError)
   try {
     const user = await User.findById(req.body.id)
