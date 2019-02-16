@@ -64,7 +64,7 @@ router.route('/s3/logo').put(auth.validateAdmin, s3.uploadLogo)
 router.route('/auth/login').post(auth.loginUser)
 
 /*
- * Auth Routes
+ * Netlify Identity Routes
  */
 
 router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
