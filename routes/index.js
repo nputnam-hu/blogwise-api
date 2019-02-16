@@ -55,7 +55,7 @@ router
  * S3 Routes
  */
 
-router.route('/s3/logo').put(auth.validateAdmin, s3.uploadLogo)
+router.route('/s3/logo').put(auth.validateUser, s3.uploadLogo)
 
 /*
  * Auth Routes
