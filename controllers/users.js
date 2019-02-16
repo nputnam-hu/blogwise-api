@@ -99,7 +99,7 @@ exports.registerInvitedUser = async (req, res, next) => {
       email: user.email,
     }
     const token = jwt.encode(payload, config.tokenSecret)
-    user.password = req.body.password
+    user.hash = req.body.password
     user.token = token
     await user.save()
     return res.json({ token, type: user.type })
