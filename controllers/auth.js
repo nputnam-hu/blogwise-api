@@ -9,7 +9,7 @@ exports.loginUser = async (req, res, next) => {
   if (validationError) return res.status(400).send(validationError)
 
   try {
-    const user = await User.findOne({ email: req.body.email })
+    const user = await User.findOne({ where: { email: req.body.email } })
     if (!user || user.type !== 'ADMIN') {
       return res
         .status(400)
