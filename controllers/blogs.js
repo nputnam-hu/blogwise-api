@@ -1,4 +1,5 @@
 const { Blog, Organization } = require('../models')
+const errors = require('../errors')
 const config = require('../config')
 const { gitCommitPush } = require('../utils/git-commit')
 
@@ -30,7 +31,14 @@ exports.updateBlog = async (req, res, next) => {
     blog: { id },
   } = req
   try {
-    const blog = await Blog.update(req.body, { where: { id } })
+    const [rowsAffected, blog] = await Blog.update(req.body, {
+      where: { id },
+      returning: true,
+      plain: true,
+    })
+    if (rowsAffected === 0) {
+      return res.status(404).send(errors.makeError(errors.err.OBJECT_NOT_FOUND))
+    }
     req.blog = blog
     return next()
   } catch (err) {
