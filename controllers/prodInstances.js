@@ -9,20 +9,19 @@ exports.getOpenInstance = async (req, res, next) => {
     })
     // check how many open instances there are
     if (openInstances.length === 0) {
-      sendAlertEmail('There are 0 Open Instances!!!!')
+      sendAlertEmail(
+        'There are 0 Open Instances!!!!',
+        `${Date.now} — Big Problem`,
+      )
       return res
         .status(500)
         .send(errors.makeError(errors.err.NO_OPEN_PROD_INSTANCE))
-    }
-    if (openInstances.length < 10) {
-      sendAlertEmail(
-        `<b>There are only ${openInstances.length} open instances left!!</b>`,
-      )
     }
     sendAlertEmail(
       `A new user has created an account! There are ${
         openInstances.length
       } open instances left`,
+      `${Date.now} — New User Sign Up`,
     )
     const openInstance = openInstances[0]
     openInstance.isTaken = true
