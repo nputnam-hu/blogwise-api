@@ -11,7 +11,7 @@ exports.getOpenInstance = async (req, res, next) => {
     if (openInstances.length === 0) {
       sendAlertEmail(
         'There are 0 Open Instances!!!!',
-        `${Date.now} — Big Problem`,
+        `${Date.now()} — Big Problem`,
       )
       return res
         .status(500)
@@ -21,7 +21,7 @@ exports.getOpenInstance = async (req, res, next) => {
       `A new user has created an account! There are ${
         openInstances.length
       } open instances left`,
-      `${Date.now} — New User Sign Up`,
+      `${Date.now()} — New User Sign Up`,
     )
     const openInstance = openInstances[0]
     openInstance.isTaken = true
