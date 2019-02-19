@@ -48,12 +48,12 @@ exports.deployBlog = async (req, res, next) => {
     const users = await org.getUsers()
     const formattedUsers = users.reduce(
       (acc, user) => ({
-        ...acc,
         [user.id]: {
           name: user.name,
           bio: user.bio,
           img: user.headshotUri,
         },
+        ...acc,
       }),
       {},
     )
