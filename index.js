@@ -9,6 +9,8 @@ const models = require('./models')
 const config = require('./config')
 const routes = require('./routes')
 
+process.on('unhandledRejection', console.error)
+
 const app = express()
 
 if (app.get('env') !== 'production') {

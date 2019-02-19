@@ -37,6 +37,10 @@ const err = {
     code: 1008,
     msg: 'Your plan has reached the max number of staff users allowed',
   },
+  NO_USER: {
+    code: 1009,
+    msg: 'No user with that token exists',
+  },
   MALFORMED_BODY: {
     code: 2001,
     msg:
@@ -45,6 +49,11 @@ const err = {
   SERVER_ERROR: {
     code: 3001,
     msg: 'There was an error on the server.',
+  },
+  NO_OPEN_PROD_INSTANCE: {
+    code: 3001,
+    msg:
+      'There is currently no open production instance to build a blog off of',
   },
   OBJECT_NOT_FOUND: {
     code: 5001,

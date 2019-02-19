@@ -1,3 +1,6 @@
+const config = require('../config')
+const { ses } = require('../config/aws')
+
 exports.allowedUsers = function allowedUsers(plan) {
   switch (plan) {
     case 'FREE':
@@ -7,8 +10,36 @@ exports.allowedUsers = function allowedUsers(plan) {
     case 'GROWTH':
       return 5
     case 'ENTERPRISE':
-      return Infinity
+      return 999
     default:
       throw new Error('Invalid Plan')
   }
+}
+
+exports.sendAlertEmail = async function sendAlertEmail(
+  msg,
+  subject = 'Alert From Blogwise API',
+) {
+  if (process.env.NODE_ENV !== 'production') {
+    return
+  }
+  const params = {
+    Destination: {
+      ToAddresses: config.alertToAdresses,
+    },
+    Message: {
+      Body: {
+        Html: {
+          Charset: 'UTF-8',
+          Data: `<h1>Alert</h1> <br/> <p>${msg}</p>`,
+        },
+      },
+      Subject: {
+        Charset: 'UTF-8',
+        Data: subject,
+      },
+    },
+    Source: 'Blogwise Team <support@blogwise.co>',
+  }
+  await ses.sendEmail(params).promise()
 }

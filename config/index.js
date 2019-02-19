@@ -2,6 +2,7 @@ module.exports = {
   tokenSecret: process.env.TOKEN_SECRET || 'reughdjsasdkpmasipkmsdfadf',
   saltRounds: process.env.SALT_ROUNDS || 10,
   port: process.env.PORT || 3001,
+  alertToAdresses: ['noahputnam@college.harvard.edu'],
   db: {
     development: {
       username: process.env.USERNAME || 'admin',
@@ -24,4 +25,7 @@ module.exports = {
       logos: 'megaphone-logo-uploads',
     },
   },
+  netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,
+  githubApiToken: process.env.GITHUB_API_TOKEN || null,
+  githubOwner: 'nputnam-hu',
 }

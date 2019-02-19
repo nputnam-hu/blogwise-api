@@ -5,6 +5,9 @@ module.exports = function defineBlog(sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    siteUrl: {
+      type: DataTypes.STRING,
+    },
     title: {
       type: DataTypes.STRING,
     },
@@ -33,6 +36,10 @@ module.exports = function defineBlog(sequelize, DataTypes) {
       type: DataTypes.JSONB,
     },
   })
+
+  Blog.associate = function buildBlog(models) {
+    Blog.hasOne(models.ProdInstance)
+  }
 
   return Blog
 }

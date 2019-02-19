@@ -10,7 +10,10 @@ exports.createOrganization = async (req, res, next) => {
     await newOrg.setBlog(req.blogId)
     await newOrg.addUser(req.user)
     req.organizationId = newOrg.id
-    return res.json({ token: req.user.token })
+    return res.json({
+      token: req.user.token,
+      netlifyUrl: req.openInstance.netlifyUrl,
+    })
   } catch (err) {
     return next(err)
   }

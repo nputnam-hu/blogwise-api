@@ -78,12 +78,12 @@ async function validateToken(req, res, next, options) {
   }
 }
 
-exports.validateAdmin = (req, res, next) => {
-  validateToken(req, res, next, { adminRequired: true })
-}
-
 exports.validateUser = (req, res, next) => {
   validateToken(req, res, next, {})
+}
+
+exports.validateAdmin = (req, res, next) => {
+  validateToken(req, res, next, { adminRequired: true })
 }
 
 exports.validateSuperAdmin = (req, res, next) => {

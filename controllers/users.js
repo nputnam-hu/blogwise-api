@@ -78,7 +78,6 @@ exports.inviteUser = async (req, res, next) => {
     await ses.sendEmail(params).promise()
     return res.json({ user: newUser })
   } catch (err) {
-    console.error(err)
     if (err.name == 'SequelizeUniqueConstraintError') {
       return res.status(400).send(errors.makeError(errors.err.EXISTING_EMAIL))
     }
@@ -102,7 +101,15 @@ exports.registerInvitedUser = async (req, res, next) => {
     user.hash = req.body.password
     user.token = token
     await user.save()
-    return res.json({ token, type: user.type })
+    const org = await Organization.findById(user.organizationId)
+    const blog = await org.getBlog()
+    const prodInstance = await blog.getProdInstance()
+    return res.json({
+      token,
+      type: user.type,
+      email: user.email,
+      netlifyUrl: prodInstance.netlifyUrl,
+    })
   } catch (err) {
     return next(err)
   }
@@ -133,8 +140,8 @@ exports.updateUser = async (req, res, next) => {
       type: req.body.type,
       headshotUri: req.body.headshotUri,
     })
-
-    return res.json(user)
+    req.user = user
+    return next()
   } catch (err) {
     return next(err)
   }

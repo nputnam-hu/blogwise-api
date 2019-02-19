@@ -4,7 +4,7 @@ const blogs = require('../controllers/blogs')
 const organizations = require('../controllers/organizations')
 const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
-const netlifyIdentity = require('../controllers/netlifyIdentity')
+const prodInstances = require('../controllers/prodInstances')
 
 const router = express.Router()
 
@@ -15,6 +15,7 @@ const router = express.Router()
 router
   .route('/organizations')
   .post(
+    prodInstances.getOpenInstance,
     blogs.createBlog,
     users.creatFirstUser,
     organizations.createOrganization,
@@ -32,7 +33,13 @@ router
 
 router
   .route('/users')
-  .put(auth.validateUser, users.updateUser)
+  .put(
+    auth.validateUser,
+    users.updateUser,
+    blogs.getBlogFromUser,
+    blogs.deployBlog,
+    users.getUser,
+  )
   .get(auth.validateSuperAdmin, users.getAllUsers)
 
 router
@@ -49,7 +56,17 @@ router.route('/users/me').get(auth.validateUser, users.getUser)
 router
   .route('/blogs')
   .get(auth.validateAdmin, blogs.getBlogFromUser, blogs.getBlog)
-  .put(auth.validateAdmin, blogs.getBlogFromUser, blogs.updateBlog)
+  .put(
+    auth.validateAdmin,
+    blogs.getBlogFromUser,
+    blogs.updateBlog,
+    blogs.deployBlog,
+    blogs.getBlog,
+  )
+
+router
+  .route('/blogs/deploy')
+  .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.deployBlog)
 
 /*
  * S3 Routes
@@ -64,16 +81,20 @@ router.route('/s3/logo').put(auth.validateUser, s3.uploadLogo)
 router.route('/auth/login').post(auth.loginUser)
 
 /*
- * Netlify Identity Routes
+ * Prod Instance Routes
  */
 
-router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
 router
-  .route('/.netlify/identity/logout')
-  .post(netlifyIdentity.validateToken, netlifyIdentity.logoutUser)
-router
-  .route('/.netlify/identity/user')
-  .get(netlifyIdentity.validateToken, netlifyIdentity.getUserData)
-router.route('/.netlify/identity/settings').get(netlifyIdentity.getSettings)
+  .route('/instances')
+  .post(auth.validateSuperAdmin, prodInstances.createInstance)
+
+// router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
+// router
+//   .route('/.netlify/identity/logout')
+//   .post(netlifyIdentity.validateToken, netlifyIdentity.logoutUser)
+// router
+//   .route('/.netlify/identity/user')
+//   .get(netlifyIdentity.validateToken, netlifyIdentity.getUserData)
+// router.route('/.netlify/identity/settings').get(netlifyIdentity.getSettings)
 
 module.exports = router
