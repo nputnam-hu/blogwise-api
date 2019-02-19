@@ -50,7 +50,6 @@ exports.getBlog = (req, res) => res.json(req.blog)
 
 exports.deployBlog = async (req, res, next) => {
   try {
-    console.log(req.blog)
     const blog = await Blog.findById(req.blog.id)
     const prodInstance = await blog.getProdInstance()
     const org = await Organization.findById(blog.OrganizationId)
