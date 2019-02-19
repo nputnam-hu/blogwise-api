@@ -42,6 +42,7 @@ exports.getBlog = (req, res) => res.json(req.blog)
 
 exports.deployBlog = async (req, res, next) => {
   try {
+    console.log(req.blog)
     const blog = await Blog.findById(req.blog.id)
     const prodInstance = await blog.getProdInstance()
     const org = await Organization.findById(blog.OrganizationId)
@@ -55,13 +56,22 @@ exports.deployBlog = async (req, res, next) => {
         },
         ...acc,
       }),
-      {},
+      {
+        blogwiseStaff: {
+          name: 'Blogwise Staff',
+          bio:
+            'Blogwise is the best way to start content marketing for your business',
+          img:
+            'https://megaphone-logo-uploads.s3.amazonaws.com/1550532855576_Noah.jpg',
+        },
+      },
     )
     const jsonData = {
       title: blog.title,
       description: blog.description,
       logoUri: blog.logoUri,
       backgroundHexCode: blog.backgroundHexCode,
+      siteUrl: blog.siteUrl,
       social: {
         mainSite: blog.mainSiteUrl,
         twitter: blog.twitterUrl
