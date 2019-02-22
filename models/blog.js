@@ -14,7 +14,13 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     description: {
       type: DataTypes.STRING,
     },
-    logoUri: {
+    headerPhotoUri: {
+      type: DataTypes.STRING,
+    },
+    sidebarPhotoUri: {
+      type: DataTypes.STRING,
+    },
+    faviconPhotoUri: {
       type: DataTypes.STRING,
     },
     backgroundHexCode: {
@@ -31,6 +37,13 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     },
     linkedinUrl: {
       type: DataTypes.STRING,
+    },
+    sslActivated: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    customNavbarLinks: {
+      type: DataTypes.JSONB,
     },
     tags: {
       type: DataTypes.JSONB,

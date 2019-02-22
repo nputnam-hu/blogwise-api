@@ -35,6 +35,7 @@ module.exports = function defineUser(sequelize, DataTypes) {
     },
     headshotUri: {
       type: DataTypes.STRING,
+      defaultValue: config.deafultHeadshot,
     },
   })
 

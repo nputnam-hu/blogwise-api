@@ -1,4 +1,4 @@
-const { ProdInstance } = require('../models')
+const { ProdInstance, Blog } = require('../models')
 const { sendAlertEmail } = require('../utils')
 const errors = require('../errors')
 
@@ -23,10 +23,10 @@ exports.getOpenInstance = async (req, res, next) => {
       } open instances left`,
       `${Date.now()} — New User Sign Up`,
     )
-    const openInstance = openInstances[0]
-    openInstance.isTaken = true
-    await openInstance.save()
-    req.openInstance = openInstance
+    const firstOpenInstance = openInstances[0]
+    firstOpenInstance.isTaken = true
+    await firstOpenInstance.save()
+    req.openInstance = firstOpenInstance
     return next()
   } catch (err) {
     return next(err)
@@ -39,10 +39,25 @@ exports.createInstance = async (req, res, next) => {
     'netlifyUrl',
   ])
   if (validationError) return res.status(400).send(validationError)
+  if (req.body.netlifyUrl.endsWith('/')) {
+    return res.status(400).send('No trailing slash in netlifyUrl')
+  }
   try {
     const newInstance = await ProdInstance.build(req.body)
     await newInstance.save()
     return res.json(newInstance)
+  } catch (err) {
+    return next(err)
+  }
+}
+exports.getInstance = async (req, res, next) => {
+  const {
+    blog: { id },
+  } = req
+  try {
+    const blog = await Blog.findById(id)
+    const prodInstance = await blog.getProdInstance()
+    return res.json(prodInstance)
   } catch (err) {
     return next(err)
   }

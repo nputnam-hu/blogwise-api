@@ -1,4 +1,5 @@
 const { Blog, Organization } = require('../models')
+const client = require('../config/netlify')
 const errors = require('../errors')
 const config = require('../config')
 const { gitCommitPush } = require('../utils/git-commit')
@@ -91,6 +92,7 @@ exports.deployBlog = async (req, res, next) => {
           ? `https://www.linkedin.com/${blog.linkedinUrl}`
           : '',
       },
+      customNavbarLinks: blog.customNavbarLinks,
       tags: blog.tags,
       authors: formattedUsers,
     }
@@ -111,6 +113,59 @@ exports.deployBlog = async (req, res, next) => {
     return next()
   } catch (err) {
     console.error(err)
+    return next(err)
+  }
+}
+
+exports.getBlogDeploys = async (req, res, next) => {
+  try {
+    const blog = await Blog.findById(req.blog.id)
+    const prodInstance = await blog.getProdInstance()
+    const deploys = await client.listSiteDeploys({
+      site_id: prodInstance.netlifyUrl.replace(/https:\/\//, ''),
+    })
+    const retDeploys = deploys.slice(0, 3).map(d => ({
+      id: d.id,
+      state: d.state,
+      published_at: d.published_at,
+      created_at: d.created_at,
+      title: d.title,
+    }))
+    return res.json(retDeploys)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.updateBlogDomain = async (req, res, next) => {
+  const {
+    blog: { id },
+  } = req
+  try {
+    const blog = await Blog.findById(id)
+    const prodInstance = await blog.getProdInstance()
+    await client.updateSite({
+      site_id: prodInstance.netlifyUrl.replace(/https:\/\//, ''),
+      body: { custom_domain: blog.siteUrl },
+    })
+    return res.sendStatus(200)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.setBlogSSL = async (req, res, next) => {
+  const {
+    blog: { id },
+  } = req
+  try {
+    const blog = await Blog.findById(id)
+    const prodInstance = await blog.getProdInstance()
+    client.provisionSiteTLSCertificate({
+      site_id: prodInstance.netlifyUrl.replace(/https:\/\//, ''),
+    })
+    return res.sendStatus(200)
+  } catch (err) {
     return next(err)
   }
 }

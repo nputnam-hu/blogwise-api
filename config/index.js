@@ -28,4 +28,6 @@ module.exports = {
   netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,
   githubApiToken: process.env.GITHUB_API_TOKEN || null,
   githubOwner: 'nputnam-hu',
+  deafultHeadshot:
+    'https://s3.amazonaws.com/megaphone-logo-uploads/defaultUser.png',
 }

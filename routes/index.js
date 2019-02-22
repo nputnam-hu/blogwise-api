@@ -65,7 +65,16 @@ router
   )
 
 router
+  .route('/blogs/dns')
+  .put(auth.validateAdmin, blogs.getBlogFromUser, blogs.updateBlogDomain)
+
+router
+  .route('/blogs/ssl')
+  .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.setBlogSSL)
+
+router
   .route('/blogs/deploy')
+  .get(auth.validateAdmin, blogs.getBlogFromUser, blogs.getBlogDeploys)
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.deployBlog)
 
 /*
@@ -86,6 +95,7 @@ router.route('/auth/login').post(auth.loginUser)
 
 router
   .route('/instances')
+  .get(auth.validateAdmin, blogs.getBlogFromUser, prodInstances.getInstance)
   .post(auth.validateSuperAdmin, prodInstances.createInstance)
 
 // router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
