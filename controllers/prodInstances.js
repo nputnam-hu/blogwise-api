@@ -18,9 +18,8 @@ exports.getOpenInstance = async (req, res, next) => {
         .send(errors.makeError(errors.err.NO_OPEN_PROD_INSTANCE))
     }
     sendAlertEmail(
-      `A new user has created an account! There are ${
-        openInstances.length
-      } open instances left`,
+      `A new user has created an account! There are ${openInstances.length -
+        1} open instances left`,
       `${Date.now()} — New User Sign Up`,
     )
     const firstOpenInstance = openInstances[0]
