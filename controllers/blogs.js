@@ -55,31 +55,22 @@ exports.deployBlog = async (req, res, next) => {
     const prodInstance = await blog.getProdInstance()
     const org = await Organization.findById(blog.OrganizationId)
     const users = await org.getUsers()
-    const formattedUsers = users.reduce(
-      (acc, user) => ({
-        [user.id]: {
-          name: user.name,
-          bio: user.bio,
-          img: user.headshotUri,
-        },
-        ...acc,
-      }),
-      {
-        blogwiseStaff: {
-          name: 'Blogwise Staff',
-          bio:
-            'Blogwise is the best way to start content marketing for your business',
-          img:
-            'https://megaphone-logo-uploads.s3.amazonaws.com/1550532855576_Noah.jpg',
-        },
+    const formattedUsers = users.reduce((acc, user) => ({
+      [user.id]: {
+        name: user.name,
+        bio: user.bio || '',
+        img: user.headshotUri,
       },
-    )
+      ...acc,
+    }))
     const jsonData = {
-      title: blog.title,
-      description: blog.description,
-      logoUri: blog.logoUri,
-      backgroundHexCode: blog.backgroundHexCode,
-      siteUrl: blog.siteUrl,
+      title: blog.title || '',
+      description: blog.description || '',
+      headerPhotoUri: blog.headerPhotoUri || '',
+      sidebarPhotoUri: blog.sidebarPhotoUri || '',
+      backgroundHexCode: blog.backgroundHexCode || '',
+      faviconPhotoUri: blog.faviconPhotoUri || '',
+      siteUrl: blog.siteUrl || '',
       social: {
         mainSite: blog.mainSiteUrl,
         twitter: blog.twitterUrl
@@ -92,9 +83,10 @@ exports.deployBlog = async (req, res, next) => {
           ? `https://www.linkedin.com/${blog.linkedinUrl}`
           : '',
       },
-      customNavbarLinks: blog.customNavbarLinks,
-      tags: blog.tags,
+      customNavbarLinks: blog.customNavbarLinks || [],
+      tags: blog.tags || {},
       authors: formattedUsers,
+      hasBeenInitialized: true,
     }
     gitCommitPush({
       owner: config.githubOwner,

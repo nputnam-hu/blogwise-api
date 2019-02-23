@@ -34,21 +34,24 @@ exports.getOpenInstance = async (req, res, next) => {
 }
 
 exports.createInstance = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, [
-    'githubRepo',
-    'netlifyUrl',
-  ])
-  if (validationError) return res.status(400).send(validationError)
-  if (req.body.netlifyUrl.endsWith('/')) {
-    return res.status(400).send('No trailing slash in netlifyUrl')
-  }
-  try {
-    const newInstance = await ProdInstance.build(req.body)
-    await newInstance.save()
-    return res.json(newInstance)
-  } catch (err) {
-    return next(err)
-  }
+  const promises = req.body.instances.map(async instance => {
+    const validationError = errors.missingFields(instance, [
+      'githubRepo',
+      'netlifyUrl',
+    ])
+    if (validationError) return res.status(400).send(validationError)
+    if (instance.netlifyUrl.endsWith('/')) {
+      return res.status(400).send('No trailing slash in netlifyUrl')
+    }
+    try {
+      const newInstance = await ProdInstance.build(instance)
+      return newInstance.save()
+    } catch (err) {
+      return next(err)
+    }
+  })
+  await Promise.all(promises)
+  return res.sendStatus(200)
 }
 exports.getInstance = async (req, res, next) => {
   const {
