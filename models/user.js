@@ -23,6 +23,12 @@ module.exports = function defineUser(sequelize, DataTypes) {
     hash: {
       type: DataTypes.STRING,
     },
+    passwordToken: {
+      type: DataTypes.STRING,
+    },
+    passwordTokenCreatedDate: {
+      type: DataTypes.DATE,
+    },
     token: {
       type: DataTypes.STRING,
     },

@@ -6,7 +6,6 @@ const { s3 } = require('../config/aws')
 async function uploadS3Object(req, res, next, bucketName) {
   const { fileName, contentType } = req.body
   const keyName = fileName
-
   const s3Params = {
     Bucket: bucketName,
     Key: keyName,
@@ -20,5 +19,5 @@ async function uploadS3Object(req, res, next, bucketName) {
   })
 }
 
-exports.uploadLogo = (req, res, next) =>
+exports.uploadPhoto = (req, res, next) =>
   uploadS3Object(req, res, next, buckets.logos)

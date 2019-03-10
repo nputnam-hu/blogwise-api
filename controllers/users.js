@@ -30,7 +30,7 @@ exports.creatFirstUser = async (req, res, next) => {
     req.user = newUser
     return next()
   } catch (err) {
-    if (err.code === 11000)
+    if (err.name == 'SequelizeUniqueConstraintError')
       return res.status(400).send(errors.makeError(errors.err.EXISTING_EMAIL))
     return res.status(500).send(errors.makeError(errors.err.SERVER_ERROR))
   }
@@ -73,7 +73,7 @@ exports.inviteUser = async (req, res, next) => {
           Data: `${req.user.name} has invited you to join their Blogwise Team`,
         },
       },
-      Source: 'Blogwise Team <support@blogwise.co>',
+      Source: 'blogwise Team <support@blogwise.co>',
     }
     await ses.sendEmail(params).promise()
     return res.json({ user: newUser })

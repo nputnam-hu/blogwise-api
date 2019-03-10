@@ -5,6 +5,7 @@ const organizations = require('../controllers/organizations')
 const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
+const netlifyIdentity = require('../controllers/netlifyIdentity')
 
 const router = express.Router()
 
@@ -37,7 +38,7 @@ router
     auth.validateUser,
     users.updateUser,
     blogs.getBlogFromUser,
-    blogs.deployBlog,
+    // blogs.deployBlog,
     users.getUser,
   )
   .get(auth.validateSuperAdmin, users.getAllUsers)
@@ -60,7 +61,7 @@ router
     auth.validateAdmin,
     blogs.getBlogFromUser,
     blogs.updateBlog,
-    blogs.deployBlog,
+    // blogs.deployBlog,
     blogs.getBlog,
   )
 
@@ -77,17 +78,25 @@ router
   .get(auth.validateAdmin, blogs.getBlogFromUser, blogs.getBlogDeploys)
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.deployBlog)
 
+router
+  .route('/blogs/content')
+  .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.getContentRecs)
+
 /*
  * S3 Routes
  */
 
-router.route('/s3/logo').put(auth.validateUser, s3.uploadLogo)
+router.route('/s3/upload').put(auth.validateUser, s3.uploadPhoto)
 
 /*
  * Auth Routes
  */
 
 router.route('/auth/login').post(auth.loginUser)
+
+router.route('/auth/forgot').post(auth.sendResetToken)
+
+router.route('/auth/reset').put(auth.resetPassword)
 
 /*
  * Prod Instance Routes
@@ -98,7 +107,7 @@ router
   .get(auth.validateAdmin, blogs.getBlogFromUser, prodInstances.getInstance)
   .post(auth.validateSuperAdmin, prodInstances.createInstance)
 
-// router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
+router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
 // router
 //   .route('/.netlify/identity/logout')
 //   .post(netlifyIdentity.validateToken, netlifyIdentity.logoutUser)

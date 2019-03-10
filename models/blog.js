@@ -11,7 +11,13 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     title: {
       type: DataTypes.STRING,
     },
+    companyName: {
+      type: DataTypes.STRING,
+    },
     description: {
+      type: DataTypes.TEXT,
+    },
+    bgImgUri: {
       type: DataTypes.STRING,
     },
     headerPhotoUri: {

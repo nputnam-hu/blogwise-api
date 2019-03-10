@@ -2,6 +2,8 @@ const jwt = require('jwt-simple')
 const crypto = require('crypto')
 const { User } = require('../models')
 const config = require('../config')
+const { ses } = require('../config/aws')
+const forgotPassword = require('../emails/forgotPassword')
 const errors = require('../errors.js')
 
 exports.loginUser = async (req, res, next) => {
@@ -40,7 +42,7 @@ async function validateToken(req, res, next, options) {
   const token =
     req.body.token || req.query.token || req.headers['x-access-token']
 
-  // Super admins are blogwise admins
+  // Super admins are blogwise employees
   if (
     options.superAdminRequired &&
     token === (process.env.SUPER_ADMIN_PW || 'devpw')
@@ -140,18 +142,18 @@ exports.resetPassword = async (req, res, next) => {
       return res.status(400).send(errors.makeError(errors.err.NOT_AUTHORIZED))
     }
     const hour = 60 * 60 * 1000
-    if (Date.now() - user.passwordTokenCreatedDate > hour) {
+    if (new Date() - user.passwordTokenCreatedDate > hour) {
       return res.status(400).send(errors.makeError(errors.err.EXPIRED_TOKEN))
     }
     user.hash = req.body.newPassword
     await user.save()
-    return res.sendStatus(200)
+    return res.json({ token: user.token, type: user.type })
   } catch (err) {
     return next(err)
   }
 }
 
-exports.sendResetToken = async (req, res) => {
+exports.sendResetToken = async (req, res, next) => {
   const validationError = errors.missingFields(req.body, ['email'])
   if (validationError) return res.status(400).send(validationError)
   const user = await User.findOne({ email: req.body.email })
@@ -173,33 +175,28 @@ exports.sendResetToken = async (req, res) => {
   user.passwordToken = token
   user.passwordTokenCreatedDate = Date.now()
 
-  // user.save(err => {
-  //   if (err) return next(err)
-
-  //   const msg = {
-  //     to: user.email,
-  //     from: 'support@' + config.appDomain,
-  //     subject: 'Recovering your ' + config.appName + ' password.',
-  //     text:
-  //       'Hi ' +
-  //       user.name +
-  //       ',\n\nHere is your generated password reset token. Insert it into the password recovery modal on ' +
-  //       config.appDomain +
-  //       'to reset your password. If you did not request this, then ignore this email.\n\nToken: ' +
-  //       token +
-  //       '.',
-  //     html:
-  //       '<h1>Hi ' +
-  //       user.name +
-  //       ',<h1><br><p>Here is your generated password reset token. Insert it into the password recovery modal on <a href=' +
-  //       config.appDomain +
-  //       '>' +
-  //       config.appDomain +
-  //       '</a> to reset your password. If you did not request this, then ignore this email.</p><br><p>Token: ' +
-  //       token +
-  //       '</p>'
-  //   }
-  //   sgMail.send(msg)
-  return res.sendStatus(200)
-  // })
+  try {
+    await user.save()
+    const params = {
+      Destination: {
+        ToAddresses: [user.email],
+      },
+      Message: {
+        Body: {
+          Html: {
+            Charset: 'UTF-8',
+            Data: forgotPassword(user.passwordToken, user.email),
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `Reset Your blogwise Password`,
+        },
+      },
+      Source: 'blogwise Team <support@blogwise.co>',
+    }
+    await ses.sendEmail(params).promise()
+  } catch (err) {
+    return next(err)
+  }
 }

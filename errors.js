@@ -51,7 +51,7 @@ const err = {
     msg: 'There was an error on the server.',
   },
   NO_OPEN_PROD_INSTANCE: {
-    code: 3001,
+    code: 3002,
     msg:
       'There is currently no open production instance to build a blog off of',
   },

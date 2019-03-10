@@ -1,9 +1,16 @@
 require('dotenv').config()
 const express = require('express')
-const path = require('path')
-const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const Cabin = require('cabin')
+const responseTime = require('response-time')
+const requestId = require('express-request-id')
+const { Signale } = require('signale')
+const pino = require('pino')({
+  customLevels: {
+    log: 30,
+  },
+})
 
 const models = require('./models')
 const config = require('./config')
@@ -13,9 +20,20 @@ process.on('unhandledRejection', console.error)
 
 const app = express()
 
-if (app.get('env') !== 'production') {
-  app.use(logger('dev'))
-}
+const cabin = new Cabin({
+  axe: {
+    logger: app.get('env') === 'production' ? pino : new Signale(),
+  },
+})
+
+// adds `X-Response-Time` header to responses
+app.use(responseTime())
+
+// adds or re-uses `X-Request-Id` header
+app.use(requestId())
+
+// use the cabin middleware (adds request-based logging and helpers)
+app.use(cabin.middleware)
 
 // Middleware to handle CORS
 app.use((req, res, next) => {
@@ -50,7 +68,6 @@ app.use((req, res, next) => {
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', routes)
 

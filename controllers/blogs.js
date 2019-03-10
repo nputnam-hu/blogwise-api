@@ -1,8 +1,10 @@
+const { getColorFromURL } = require('color-thief-node')
 const { Blog, Organization } = require('../models')
 const client = require('../config/netlify')
 const errors = require('../errors')
 const config = require('../config')
 const { gitCommitPush } = require('../utils/git-commit')
+const { genHeadlines } = require('../utils/blogIdeas')
 
 exports.createBlog = async (req, _, next) => {
   try {
@@ -27,10 +29,26 @@ exports.getBlogFromUser = async (req, _, next) => {
   }
 }
 
+function toHexStr(c) {
+  if (c > 255) {
+    throw new Error('problem')
+  }
+  const hex = c.toString(16)
+  return `${c < 16 ? '0' : ''}${hex}`
+}
+
+const arrToHexString = ([r, g, b]) =>
+  `#${toHexStr(r)}${toHexStr(g)}${toHexStr(b)}`
+
 exports.updateBlog = async (req, res, next) => {
   const {
     blog: { id },
   } = req
+  // if new background image, set backgroundHex to img's dominant color
+  if (req.body.bgImgUri && req.blog.bgImgUri !== req.body.bgImgUri) {
+    const dominantColor = await getColorFromURL(req.body.bgImgUri)
+    req.body.backgroundHexCode = arrToHexString(dominantColor)
+  }
   try {
     const [rowsAffected, blog] = await Blog.update(req.body, {
       where: { id },
@@ -71,6 +89,7 @@ exports.deployBlog = async (req, res, next) => {
       description: blog.description || '',
       headerPhotoUri: blog.headerPhotoUri || '',
       sidebarPhotoUri: blog.sidebarPhotoUri || '',
+      bgImgUri: blog.bgImgUri || '',
       backgroundHexCode: blog.backgroundHexCode || '',
       faviconPhotoUri: blog.faviconPhotoUri || '',
       siteUrl: blog.siteUrl || '',
@@ -163,4 +182,15 @@ exports.setBlogSSL = async (req, res, next) => {
   } catch (err) {
     return next(err)
   }
+}
+
+exports.getContentRecs = (req, res) => {
+  let { nouns, n } = req.body
+  if (!nouns) {
+    const { tags = {} } = req.blog
+    nouns = Object.values(tags).map(t => t.name)
+  }
+  if (nouns.length === 0) return res.json([])
+  const headlines = genHeadlines(nouns, n || undefined)
+  return res.json(headlines)
 }

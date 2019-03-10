@@ -23,6 +23,7 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
       foreignKey: 'organizationId',
     })
     Organization.hasOne(models.Blog)
+    Organization.hasOne(models.Calendar)
   }
 
   return Organization

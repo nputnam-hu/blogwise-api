@@ -18,15 +18,21 @@ module.exports = {
     },
   },
   AWS: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || null,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || null,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'AKIAIQYLBNTWV7ORIPJA',
+    secretAccessKey:
+      process.env.AWS_SECRET_ACCESS_KEY ||
+      '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',
     region: process.env.AWS_S3_REGION || 'us-east-1',
     buckets: {
       logos: 'megaphone-logo-uploads',
     },
   },
-  netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,
-  githubApiToken: process.env.GITHUB_API_TOKEN || null,
+  netlifyApiToken:
+    process.env.NETLIFY_API_TOKEN ||
+    '6602da1d60c73a18ea48a76f7c320b936124ebdfe7628698a1adb0f36a765c02',
+  githubApiToken:
+    process.env.GITHUB_API_TOKEN ||
+    'Basic bnB1dG5hbS1odTpmNjhkNWJiMzZkNmI1ZTI1OTY2YTI5YTA3ZjE0ODYzZDUwZjUzMjg2',
   githubOwner: 'nputnam-hu',
   deafultHeadshot:
     'https://s3.amazonaws.com/megaphone-logo-uploads/defaultUser.png',
