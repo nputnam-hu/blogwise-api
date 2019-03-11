@@ -2,15 +2,9 @@ require('dotenv').config()
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-const Cabin = require('cabin')
 const responseTime = require('response-time')
 const requestId = require('express-request-id')
-const { Signale } = require('signale')
-const pino = require('pino')({
-  customLevels: {
-    log: 30,
-  },
-})
+const pino = require('express-pino-logger')()
 
 const models = require('./models')
 const config = require('./config')
@@ -20,20 +14,13 @@ process.on('unhandledRejection', console.error)
 
 const app = express()
 
-const cabin = new Cabin({
-  axe: {
-    logger: new Signale(),
-  },
-})
-
 // adds `X-Response-Time` header to responses
 app.use(responseTime())
 
 // adds or re-uses `X-Request-Id` header
 app.use(requestId())
 
-// use the cabin middleware (adds request-based logging and helpers)
-app.use(cabin.middleware)
+app.use(pino)
 
 // Middleware to handle CORS
 app.use((req, res, next) => {
