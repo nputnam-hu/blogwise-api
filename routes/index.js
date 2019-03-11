@@ -38,7 +38,7 @@ router
     auth.validateUser,
     users.updateUser,
     blogs.getBlogFromUser,
-    // blogs.deployBlog,
+    blogs.deployBlog,
     users.getUser,
   )
   .get(auth.validateSuperAdmin, users.getAllUsers)
@@ -61,7 +61,7 @@ router
     auth.validateAdmin,
     blogs.getBlogFromUser,
     blogs.updateBlog,
-    // blogs.deployBlog,
+    blogs.deployBlog,
     blogs.getBlog,
   )
 
