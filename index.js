@@ -22,7 +22,7 @@ const app = express()
 
 const cabin = new Cabin({
   axe: {
-    logger: app.get('env') === 'production' ? pino : new Signale(),
+    logger: new Signale(),
   },
 })
 
