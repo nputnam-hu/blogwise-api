@@ -15,6 +15,10 @@ module.exports = function defineCalendarPost(sequelize, DataTypes) {
     dueDate: {
       type: DataTypes.DATE,
     },
+    relevantTweets: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
   })
 
   return CalendarPost

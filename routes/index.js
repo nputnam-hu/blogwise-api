@@ -5,7 +5,9 @@ const organizations = require('../controllers/organizations')
 const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
+const calendars = require('../controllers/calendars')
 const netlifyIdentity = require('../controllers/netlifyIdentity')
+const tipOfTheDay = require('../utils/tipOfTheDay')
 
 const router = express.Router()
 
@@ -81,6 +83,31 @@ router
 router
   .route('/blogs/content')
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.getContentRecs)
+
+router.route('/blogs/tip').get(auth.validateAdmin, tipOfTheDay)
+
+/*
+ * Calendar Routes
+ */
+
+router.route('/calendars').post(auth.validateAdmin, calendars.createCalendar)
+router
+  .route('/calendars/posts')
+  .get(auth.validateAdmin, calendars.getCalendarFromUser, calendars.getPosts)
+  .post(
+    auth.validateAdmin,
+    calendars.getCalendarFromUser,
+    calendars.scheduleInitialPosts,
+  )
+  .put(auth.validateAdmin, calendars.updatePost)
+
+router
+  .route('/calendars/posts/next')
+  .get(
+    auth.validateAdmin,
+    calendars.getCalendarFromUser,
+    calendars.getNextPostDue,
+  )
 
 /*
  * S3 Routes

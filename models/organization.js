@@ -14,6 +14,7 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     plan: {
       type: DataTypes.STRING,
       enum: ['FREE', 'STARTER', 'GROWTH', 'ENTERPRISE'],
+      defaultValue: 'STARTER',
     },
   })
 
