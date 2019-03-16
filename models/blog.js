@@ -50,6 +50,7 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     },
     customNavbarLinks: {
       type: DataTypes.JSONB,
+      defaultValue: [],
     },
     tags: {
       type: DataTypes.JSONB,

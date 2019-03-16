@@ -86,6 +86,7 @@ exports.deployBlog = async (req, res, next) => {
     )
     const jsonData = {
       title: blog.title || '',
+      name: blog.companyName || '',
       description: blog.description || '',
       headerPhotoUri: blog.headerPhotoUri || '',
       sidebarPhotoUri: blog.sidebarPhotoUri || '',
