@@ -7,5 +7,6 @@ The app is a simple express app with built in token authentication for users.
 
 1. Clone the repository.
 2. Run `npm install`.
-5. In a different window run `npm run dev` to start the api
+3. Run `npm run db` in one terminal window to start the PostgreSQL client. To start that client, run `\i config/script.sql` to create the DB
+4. In a different window run `npm run dev` to start the api
 
