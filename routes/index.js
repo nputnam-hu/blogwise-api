@@ -40,7 +40,7 @@ router
     auth.validateUser,
     users.updateUser,
     blogs.getBlogFromUser,
-    // blogs.deployBlog,
+    blogs.deployBlog,
     users.getUser,
   )
   .get(auth.validateSuperAdmin, users.getAllUsers)
@@ -63,7 +63,7 @@ router
     auth.validateAdmin,
     blogs.getBlogFromUser,
     blogs.updateBlog,
-    // blogs.deployBlog,
+    blogs.deployBlog,
     blogs.getBlog,
   )
 
@@ -117,11 +117,9 @@ router
   .route('/blogs/posts/:id/publish/schedule/cancel')
   .delete(auth.validateUser, blogPosts.cancelScheduledPublish)
 
-router.route('/blogs/posts/:id/unpublish').post(
-  auth.validateUser,
-  blogPosts.unpublishBlogPost,
-  // blogs.deployBlog
-)
+router
+  .route('/blogs/posts/:id/unpublish')
+  .post(auth.validateUser, blogPosts.unpublishBlogPost, blogs.deployBlog)
 
 /*
  * Calendar Routes

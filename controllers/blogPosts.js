@@ -101,7 +101,7 @@ async function deployBlogPost(blogPost, user) {
   blogPost.hasBeenPublished = true
   blogPost.scheduledPublishDate = null
   await blogPost.save()
-  // await commitJSON(blogPost.blogId, user)
+  await commitJSON(blogPost.blogId, user)
 }
 
 exports.publishBlogPostNow = async (req, res, next) => {
