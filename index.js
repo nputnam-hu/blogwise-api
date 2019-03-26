@@ -52,8 +52,14 @@ app.use((req, res, next) => {
   return next()
 })
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json({ parameterLimit: 100000, limit: '50mb' }))
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+    parameterLimit: 100000,
+    limit: '50mb',
+  }),
+)
 app.use(cookieParser())
 
 app.use('/', routes)

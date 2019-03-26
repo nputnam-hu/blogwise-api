@@ -31,6 +31,7 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     },
     backgroundHexCode: {
       type: DataTypes.STRING,
+      defaultValue: '#ffffff',
     },
     mainSiteUrl: {
       type: DataTypes.STRING,
@@ -59,6 +60,7 @@ module.exports = function defineBlog(sequelize, DataTypes) {
 
   Blog.associate = function buildBlog(models) {
     Blog.hasOne(models.ProdInstance)
+    Blog.hasMany(models.BlogPost, { as: 'blogPosts', foreignKey: 'blogId' })
   }
 
   return Blog

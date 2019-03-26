@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const randomClickbaitNumber = (lower = 12, upper = 19) =>
   Math.floor(Math.random() * (upper - lower) + lower)
 
@@ -52,7 +54,7 @@ const genHeadlines = (nouns, n = 3) => {
       potentialIndex = Math.floor(Math.random() * headlines.length)
     }
     indexes.push(potentialIndex)
-    const noun = nouns[Math.floor(Math.random() * nouns.length)]
+    const noun = _.startCase(nouns[Math.floor(Math.random() * nouns.length)])
     ret.push(headlines[potentialIndex](noun))
   }
   return ret

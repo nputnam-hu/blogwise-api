@@ -67,67 +67,94 @@ exports.updateBlog = async (req, res, next) => {
 
 exports.getBlog = (req, res) => res.json(req.blog)
 
+async function commitJSON (id, user) {
+  const blog = await Blog.findById(id)
+  const prodInstance = await blog.getProdInstance()
+  const jsonData = {
+    faviconPhotoUri: blog.faviconPhotoUri || '',
+    customNavbarLinks: blog.customNavbarLinks || [],
+    token: user.token,
+    apiUrl: process.env.DB_URL
+      ? 'https://megaphone-api-prod.herokuapp.com'
+      : 'http://localhost:3001',
+    hasBeenInitialized: true,
+  }
+  gitCommitPush({
+    owner: config.githubOwner,
+    repo: prodInstance.githubRepo,
+    files: [
+      {
+        path: 'src/constants/user.json',
+        content: JSON.stringify(jsonData),
+      },
+    ],
+    fullyQualifiedRef: 'heads/master',
+    forceUpdate: true,
+    commitMessage: `Update From Admin Dashboard, User ID: ${user.id}`,
+    token: config.githubApiToken,
+  })
+}
+
+exports.commitJSON = commitJSON
+
 exports.deployBlog = async (req, res, next) => {
   try {
+    await commitJSON(req.blog.id, req.user)
+    return next()
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.buildBlog = async (req, res, next) => {
+  try {
     const blog = await Blog.findById(req.blog.id)
-    const prodInstance = await blog.getProdInstance()
     const org = await Organization.findById(blog.OrganizationId)
     const users = await org.getUsers()
-    const formattedUsers = users.reduce(
-      (acc, user) => ({
-        [user.id]: {
-          name: user.name,
-          bio: user.bio || '',
-          img: user.headshotUri,
-        },
-        ...acc,
-      }),
-      {},
-    )
-    const jsonData = {
-      title: blog.title || '',
-      name: blog.companyName || '',
-      description: blog.description || '',
-      headerPhotoUri: blog.headerPhotoUri || '',
-      sidebarPhotoUri: blog.sidebarPhotoUri || '',
-      bgImgUri: blog.bgImgUri || '',
-      backgroundHexCode: blog.backgroundHexCode || '',
-      faviconPhotoUri: blog.faviconPhotoUri || '',
-      siteUrl: blog.siteUrl || '',
-      social: {
-        mainSite: blog.mainSiteUrl,
-        twitter: blog.twitterUrl
+    const blogPosts = await blog.getBlogPosts({
+      where: { hasBeenPublished: true },
+    })
+    const responseJson = {
+      authors: users.map(u => ({
+        id: u.id,
+        name: u.name,
+        headshotUri: u.headshotUri,
+        bio: u.bio,
+      })),
+      posts: blogPosts.map(p => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        htmlBody: p.htmlBody,
+        publishDate: p.publishDate,
+        coverPhotoUri: p.coverPhotoUri,
+        tagIds: p.tags.map(t => t.value),
+        slug: p.slug,
+        authorId: p.UserId,
+      })),
+      tags: blog.tags,
+      data: {
+        title: blog.title || '',
+        name: blog.companyName || '',
+        description: blog.description || '',
+        headerPhotoUri: blog.headerPhotoUri || '',
+        sidebarPhotoUri: blog.sidebarPhotoUri || '',
+        bgImgUri: blog.bgImgUri || '',
+        backgroundHexCode: blog.backgroundHexCode || '',
+        mainSiteUrl: blog.mainSiteUrl || '',
+        twitterUrl: blog.twitterUrl
           ? `https://twitter.com/${blog.twitterUrl}`
           : '',
-        facebook: blog.facebookUrl
+        facebookUrl: blog.facebookUrl
           ? `https://www.facebook.com/${blog.facebookUrl}`
           : '',
-        linkedin: blog.linkedinUrl
+        linkedinUrl: blog.linkedinUrl
           ? `https://www.linkedin.com/${blog.linkedinUrl}`
           : '',
       },
-      customNavbarLinks: blog.customNavbarLinks || [],
-      tags: blog.tags || {},
-      authors: formattedUsers,
-      hasBeenInitialized: true,
     }
-    gitCommitPush({
-      owner: config.githubOwner,
-      repo: prodInstance.githubRepo,
-      files: [
-        {
-          path: 'src/constants/user.json',
-          content: JSON.stringify(jsonData),
-        },
-      ],
-      fullyQualifiedRef: 'heads/master',
-      forceUpdate: true,
-      commitMessage: `Update From Admin Dashboard, User ID: ${req.user.id}`,
-      token: config.githubApiToken,
-    })
-    return next()
+    return res.json(responseJson)
   } catch (err) {
-    console.error(err)
     return next(err)
   }
 }

@@ -67,7 +67,7 @@ exports.scheduleInitialPosts = async (req, res, next) => {
     const calendar = await Calendar.findById(req.calendar.id)
     const promises = datedPosts.map(async post => {
       const newPost = await CalendarPost.build(post)
-      calendar.addPost(newPost)
+      calendar.addPosts([newPost])
       return newPost.save()
     })
     const savedPosts = await Promise.all(promises)
@@ -123,6 +123,7 @@ exports.getNextPostDue = async (req, res, next) => {
       },
       order: [['dueDate', 'ASC']],
     })
+    if (!post) return res.json({})
     if (post.relevantTweets.length === 0) {
       post.relevantTweets = await searchTweets(
         post.title,

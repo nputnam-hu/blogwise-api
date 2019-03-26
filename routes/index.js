@@ -5,8 +5,8 @@ const organizations = require('../controllers/organizations')
 const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
+const blogPosts = require('../controllers/blogPosts')
 const calendars = require('../controllers/calendars')
-const netlifyIdentity = require('../controllers/netlifyIdentity')
 const tipOfTheDay = require('../utils/tipOfTheDay')
 
 const router = express.Router()
@@ -40,7 +40,7 @@ router
     auth.validateUser,
     users.updateUser,
     blogs.getBlogFromUser,
-    blogs.deployBlog,
+    // blogs.deployBlog,
     users.getUser,
   )
   .get(auth.validateSuperAdmin, users.getAllUsers)
@@ -63,7 +63,7 @@ router
     auth.validateAdmin,
     blogs.getBlogFromUser,
     blogs.updateBlog,
-    blogs.deployBlog,
+    // blogs.deployBlog,
     blogs.getBlog,
   )
 
@@ -81,10 +81,47 @@ router
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.deployBlog)
 
 router
+  .route('/blogs/build')
+  .get(auth.validateUser, blogs.getBlogFromUser, blogs.buildBlog)
+
+router
   .route('/blogs/content')
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.getContentRecs)
 
 router.route('/blogs/tip').get(auth.validateAdmin, tipOfTheDay)
+
+/*
+ * BlogPost Routes
+ */
+
+router
+  .route('/blogs/posts')
+  .get(auth.validateUser, blogs.getBlogFromUser, blogPosts.getBlogPosts)
+  .post(auth.validateUser, blogs.getBlogFromUser, blogPosts.createBlogPost)
+  .put(auth.validateUser, blogPosts.updateBlogPost)
+
+router
+  .route('/blogs/posts/:id')
+  .get(auth.validateUser, blogPosts.getBlogPostById)
+  .delete(auth.validateUser, blogPosts.deleteBlogPostById)
+
+router
+  .route('/blogs/posts/:id/publish')
+  .post(auth.validateUser, blogPosts.publishBlogPostNow)
+
+router
+  .route('/blogs/posts/:id/publish/schedule')
+  .post(auth.validateUser, blogPosts.publishBlogPostLater)
+
+router
+  .route('/blogs/posts/:id/publish/schedule/cancel')
+  .delete(auth.validateUser, blogPosts.cancelScheduledPublish)
+
+router.route('/blogs/posts/:id/unpublish').post(
+  auth.validateUser,
+  blogPosts.unpublishBlogPost,
+  // blogs.deployBlog
+)
 
 /*
  * Calendar Routes
@@ -133,14 +170,5 @@ router
   .route('/instances')
   .get(auth.validateAdmin, blogs.getBlogFromUser, prodInstances.getInstance)
   .post(auth.validateSuperAdmin, prodInstances.createInstance)
-
-router.route('/.netlify/identity/token').post(netlifyIdentity.loginUser)
-// router
-//   .route('/.netlify/identity/logout')
-//   .post(netlifyIdentity.validateToken, netlifyIdentity.logoutUser)
-// router
-//   .route('/.netlify/identity/user')
-//   .get(netlifyIdentity.validateToken, netlifyIdentity.getUserData)
-// router.route('/.netlify/identity/settings').get(netlifyIdentity.getSettings)
 
 module.exports = router
