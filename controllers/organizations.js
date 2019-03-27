@@ -1,7 +1,11 @@
 const { Organization } = require('../models')
+const { getCustomerPlanFromStripeToken } = require('./payments')
 
 exports.createOrganization = async (req, res, next) => {
-  const newOrg = await Organization.build(req.body)
+  const newOrg = await Organization.build({
+    stripeToken: req.stripeCustomerId,
+    ...req.body,
+  })
   if (!newOrg) {
     return res.status(400).send('Could not create user')
   }
@@ -12,7 +16,7 @@ exports.createOrganization = async (req, res, next) => {
     req.organizationId = newOrg.id
     return res.json({
       token: req.user.token,
-      netlifyUrl: req.openInstance.netlifyUrl,
+      type: req.user.type,
     })
   } catch (err) {
     return next(err)
@@ -22,6 +26,8 @@ exports.createOrganization = async (req, res, next) => {
 exports.getOrganization = async (req, res, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)
+    const plan = await getCustomerPlanFromStripeToken(org.stripeToken)
+    org.plan = plan
     return res.json(org)
   } catch (err) {
     return next(err)

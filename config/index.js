@@ -34,6 +34,7 @@ module.exports = {
     access_token_key: process.env.TWITTER_ACCCESS_TOKEN_KEY || null,
     access_token_secret: process.env.TWITTER_ACCCESS_TOKEN_SECRET || null,
   },
+  stripeApiToken: process.env.STRIPE_API_TOKEN || null,
   netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,
   githubApiToken: process.env.GITHUB_API_TOKEN || null,
   githubOwner: 'nputnam-hu',

@@ -67,7 +67,12 @@ exports.updateBlog = async (req, res, next) => {
 
 exports.getBlog = (req, res) => res.json(req.blog)
 
-async function commitJSON (id, user) {
+async function commitJSON(id, user) {
+  // somewhat hacky way of checking if env is prod or dev
+  // need to change if change our DB process
+  if (!process.env.DB_URL) {
+    return
+  }
   const blog = await Blog.findById(id)
   const prodInstance = await blog.getProdInstance()
   const jsonData = {

@@ -28,6 +28,7 @@
     "pg-hstore": "^2.3.2",
     "response-time": "^2.3.2",
     "sequelize": "^4.42.0",
+    "stripe": "^6.28.0",
     "twitter": "^1.7.1",
     "wordpos": "^1.2.0"
   },

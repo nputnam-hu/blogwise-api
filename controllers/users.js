@@ -50,7 +50,8 @@ exports.inviteUser = async (req, res, next) => {
     }
     const org = await Organization.findById(req.user.organizationId)
     const orgUsers = await org.getUsers()
-    if (orgUsers.length + 1 > allowedUsers(org.plan)) {
+    const n = await allowedUsers(org.stripeToken)
+    if (orgUsers.length + 1 > n) {
       return res
         .status(400)
         .send(errors.makeError(errors.err.MAX_USERS_REACHED))
@@ -101,14 +102,10 @@ exports.registerInvitedUser = async (req, res, next) => {
     user.hash = req.body.password
     user.token = token
     await user.save()
-    const org = await Organization.findById(user.organizationId)
-    const blog = await org.getBlog()
-    const prodInstance = await blog.getProdInstance()
     return res.json({
       token,
       type: user.type,
       email: user.email,
-      netlifyUrl: prodInstance.netlifyUrl,
     })
   } catch (err) {
     return next(err)

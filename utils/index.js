@@ -1,7 +1,9 @@
 const config = require('../config')
 const { ses } = require('../config/aws')
+const { getCustomerPlanFromStripeToken } = require('../controllers/payments')
 
-exports.allowedUsers = function allowedUsers(plan) {
+exports.allowedUsers = async function allowedUsers(stripeToken) {
+  const plan = await getCustomerPlanFromStripeToken(stripeToken)
   switch (plan) {
     case 'FREE':
       return 1

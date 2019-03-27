@@ -12,7 +12,7 @@ exports.loginUser = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ where: { email: req.body.email } })
-    if (!user || user.type !== 'ADMIN') {
+    if (!user) {
       return res
         .status(400)
         .send(errors.makeError(errors.err.OBJECT_NOT_FOUND, { name: 'user' }))
@@ -32,7 +32,7 @@ exports.loginUser = async (req, res, next) => {
     const token = jwt.encode(payload, config.tokenSecret)
     user.token = token
     await user.save()
-    return res.json({ token })
+    return res.json({ token, type: user.type })
   } catch (err) {
     return next(err)
   }

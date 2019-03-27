@@ -2,6 +2,7 @@ const express = require('express')
 const auth = require('../controllers/auth')
 const blogs = require('../controllers/blogs')
 const organizations = require('../controllers/organizations')
+const payments = require('../controllers/payments')
 const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
@@ -21,6 +22,7 @@ router
     prodInstances.getOpenInstance,
     blogs.createBlog,
     users.creatFirstUser,
+    payments.createCustomer,
     organizations.createOrganization,
   )
   .get(auth.validateAdmin, organizations.getOrganization)
@@ -86,9 +88,9 @@ router
 
 router
   .route('/blogs/content')
-  .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.getContentRecs)
+  .post(auth.validateUser, blogs.getBlogFromUser, blogs.getContentRecs)
 
-router.route('/blogs/tip').get(auth.validateAdmin, tipOfTheDay)
+router.route('/blogs/tip').get(auth.validateUser, tipOfTheDay)
 
 /*
  * BlogPost Routes
@@ -125,21 +127,21 @@ router
  * Calendar Routes
  */
 
-router.route('/calendars').post(auth.validateAdmin, calendars.createCalendar)
+router.route('/calendars').post(auth.validateUser, calendars.createCalendar)
 router
   .route('/calendars/posts')
-  .get(auth.validateAdmin, calendars.getCalendarFromUser, calendars.getPosts)
+  .get(auth.validateUser, calendars.getCalendarFromUser, calendars.getPosts)
   .post(
-    auth.validateAdmin,
+    auth.validateUser,
     calendars.getCalendarFromUser,
     calendars.scheduleInitialPosts,
   )
-  .put(auth.validateAdmin, calendars.updatePost)
+  .put(auth.validateUser, calendars.updatePost)
 
 router
   .route('/calendars/posts/next')
   .get(
-    auth.validateAdmin,
+    auth.validateUser,
     calendars.getCalendarFromUser,
     calendars.getNextPostDue,
   )
