@@ -29,6 +29,9 @@ module.exports = function defineBlogPost(sequelize, DataTypes) {
     slug: {
       type: DataTypes.STRING,
     },
+    thumbnailUri: {
+      type: DataTypes.STRING,
+    },
     hasBeenPublished: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

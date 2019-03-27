@@ -20,9 +20,6 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     bgImgUri: {
       type: DataTypes.STRING,
     },
-    thumbnailUri: {
-      type: DataTypes.STRING,
-    },
     headerPhotoUri: {
       type: DataTypes.STRING,
     },
