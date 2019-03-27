@@ -79,7 +79,7 @@ async function commitJSON(id, user) {
     faviconPhotoUri: blog.faviconPhotoUri || '',
     customNavbarLinks: blog.customNavbarLinks || [],
     token: user.token,
-    apiUrl: process.env.DB_URL
+    apiUrl: process.env.DATABASE_URL
       ? 'https://megaphone-api-prod.herokuapp.com'
       : 'http://localhost:3001',
     hasBeenInitialized: true,
