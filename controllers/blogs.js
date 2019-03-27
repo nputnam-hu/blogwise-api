@@ -70,7 +70,7 @@ exports.getBlog = (req, res) => res.json(req.blog)
 async function commitJSON(id, user) {
   // somewhat hacky way of checking if env is prod or dev
   // need to change if change our DB process
-  if (!process.env.DB_URL) {
+  if (!process.env.DATABASE_URL) {
     return
   }
   const blog = await Blog.findById(id)
