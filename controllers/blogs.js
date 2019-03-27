@@ -133,6 +133,7 @@ exports.buildBlog = async (req, res, next) => {
         htmlBody: p.htmlBody,
         publishDate: p.publishDate,
         coverPhotoUri: p.coverPhotoUri,
+        thumbnailUri: p.thumbnailUri,
         tagIds: p.tags.map(t => t.value),
         slug: p.slug,
         authorId: p.UserId,
