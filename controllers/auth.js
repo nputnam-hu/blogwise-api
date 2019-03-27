@@ -142,9 +142,9 @@ exports.resetPassword = async (req, res, next) => {
       return res.status(400).send(errors.makeError(errors.err.NOT_AUTHORIZED))
     }
     const hour = 60 * 60 * 1000
-    if (new Date() - user.passwordTokenCreatedDate > hour) {
-      return res.status(400).send(errors.makeError(errors.err.EXPIRED_TOKEN))
-    }
+    // if (new Date() - user.passwordTokenCreatedDate > hour) {
+    //   return res.status(400).send(errors.makeError(errors.err.EXPIRED_TOKEN))
+    // }
     user.hash = req.body.newPassword
     await user.save()
     return res.json({ token: user.token, type: user.type })
