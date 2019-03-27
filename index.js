@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const responseTime = require('response-time')
 const requestId = require('express-request-id')
-const pino = require('express-pino-logger')()
+const morgan = require('morgan')
 
 const models = require('./models')
 const config = require('./config')
@@ -20,7 +20,7 @@ app.use(responseTime())
 // adds or re-uses `X-Request-Id` header
 app.use(requestId())
 
-app.use(pino)
+app.use(morgan())
 
 // Middleware to handle CORS
 app.use((req, res, next) => {
