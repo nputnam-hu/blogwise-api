@@ -71,16 +71,8 @@ app.use((req, res, next) => {
   next(err)
 })
 
-// development error handler
-if (app.get('env') === 'development') {
-  app.use((err, req, res) => {
-    console.error(err)
-    res.status(err.status || 500).send()
-  })
-}
-
-// production error handler
 app.use((err, req, res) => {
+  console.error(err)
   res.status(err.status || 500).send()
 })
 
