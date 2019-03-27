@@ -196,6 +196,7 @@ exports.sendResetToken = async (req, res, next) => {
       Source: 'blogwise Team <support@blogwise.co>',
     }
     await ses.sendEmail(params).promise()
+    return res.sendStatus(200)
   } catch (err) {
     return next(err)
   }
