@@ -5,9 +5,8 @@ module.exports = function defineProdInstance(sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    githubRepo: {
+    buildHookUrl: {
       type: DataTypes.STRING,
-      allowNull: false,
       unique: true,
     },
     netlifyUrl: {

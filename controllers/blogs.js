@@ -2,8 +2,7 @@ const { getColorFromURL } = require('color-thief-node')
 const { Blog, Organization } = require('../models')
 const client = require('../config/netlify')
 const errors = require('../errors')
-const config = require('../config')
-const { gitCommitPush } = require('../utils/git-commit')
+const axios = require('axios')
 const { genHeadlines } = require('../utils/blogIdeas')
 
 exports.createBlog = async (req, _, next) => {
@@ -84,20 +83,7 @@ async function commitJSON(id, user) {
       : 'http://localhost:3001',
     hasBeenInitialized: true,
   }
-  gitCommitPush({
-    owner: config.githubOwner,
-    repo: prodInstance.githubRepo,
-    files: [
-      {
-        path: 'src/constants/user.json',
-        content: JSON.stringify(jsonData),
-      },
-    ],
-    fullyQualifiedRef: 'heads/master',
-    forceUpdate: true,
-    commitMessage: `Update From Admin Dashboard, User ID: ${user.id}`,
-    token: config.githubApiToken,
-  })
+  await axios.post(prodInstance.buildHookUrl, jsonData)
 }
 
 exports.commitJSON = commitJSON
@@ -105,11 +91,23 @@ exports.commitJSON = commitJSON
 exports.deployBlog = async (req, res, next) => {
   try {
     await commitJSON(req.blog.id, req.user)
+    await Blog.update({ hasUpdates: false }, { where: { id: req.blog.id } })
+    return res.sendStatus(200)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.setBlogToUpdate = async (req, res, next) => {
+  try {
+    await Blog.update({ hasUpdates: true }, { where: { id: req.blog.id } })
     return next()
   } catch (err) {
     return next(err)
   }
 }
+
+exports.getBlogUpdateStatus = async (req, res) => res.json(req.blog.hasUpdates)
 
 exports.buildBlog = async (req, res, next) => {
   try {

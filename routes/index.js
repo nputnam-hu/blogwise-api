@@ -42,7 +42,7 @@ router
     auth.validateUser,
     users.updateUser,
     blogs.getBlogFromUser,
-    blogs.deployBlog,
+    blogs.setBlogToUpdate,
     users.getUser,
   )
   .get(auth.validateSuperAdmin, users.getAllUsers)
@@ -65,9 +65,13 @@ router
     auth.validateAdmin,
     blogs.getBlogFromUser,
     blogs.updateBlog,
-    blogs.deployBlog,
+    blogs.setBlogToUpdate,
     blogs.getBlog,
   )
+
+router
+  .route('/blogs/updates')
+  .get(auth.validateUser, blogs.getBlogFromUser, blogs.getBlogUpdateStatus)
 
 router
   .route('/blogs/dns')

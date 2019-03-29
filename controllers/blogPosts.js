@@ -96,7 +96,7 @@ async function deployBlogPost(blogPost, user) {
   if (!blogPost.slug) {
     blogPost.slug = `/a/${moment(blogPost.publishDate).format(
       'YYYY-MM-DD',
-    )}-${_.snakeCase(blogPost.title)}`
+    )}-${_.kebabCase(blogPost.title)}`
   }
   blogPost.hasBeenPublished = true
   blogPost.scheduledPublishDate = null

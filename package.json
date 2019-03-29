@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@octokit/rest": "^16.15.0",
     "aws-sdk": "^2.396.0",
+    "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.2",
     "color-thief-node": "^1.0.2",
@@ -15,7 +15,6 @@
     "eslintrc": "^1.0.6",
     "express": "^4.16.3",
     "express-request-id": "^1.4.1",
-    "git-commit-push-via-github-api": "^1.0.2",
     "jimp": "^0.6.0",
     "jwt-simple": "^0.5.5",
     "lodash": "^4.17.10",
