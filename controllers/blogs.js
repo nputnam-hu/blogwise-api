@@ -224,7 +224,8 @@ exports.setBlogSSL = async (req, res, next) => {
 }
 
 exports.getContentRecs = (req, res) => {
-  let { nouns, n } = req.body
+  let { nouns } = req.body
+  const { n } = req.body
   if (!nouns) {
     const { tags = {} } = req.blog
     nouns = Object.values(tags).map(t => t.name)
