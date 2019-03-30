@@ -10,9 +10,17 @@ const models = require('./models')
 const config = require('./config')
 const routes = require('./routes')
 
+const Sentry = require('@sentry/node')
+
+Sentry.init({
+  dsn: 'https://ad71656e9b3b464686df163a72709485@sentry.io/1427417',
+})
+
 process.on('unhandledRejection', console.error)
 
 const app = express()
+
+app.use(Sentry.Handlers.requestHandler())
 
 // adds `X-Response-Time` header to responses
 app.use(responseTime())
@@ -49,18 +57,23 @@ app.use((req, res, next) => {
   if (oneof && req.method === 'OPTIONS') {
     return res.sendStatus(200)
   }
-  return next()
+  next()
 })
 
-app.use(bodyParser.json({ parameterLimit: 100000, limit: '50mb' }))
+app.use(bodyParser.json({ parameterLimit: 100000, limit: '500mb' }))
 app.use(
   bodyParser.urlencoded({
     extended: false,
     parameterLimit: 100000,
-    limit: '50mb',
+    limit: '500mb',
   }),
 )
 app.use(cookieParser())
+
+app.use((req, res, next) => {
+  req.locals.Sentry = Sentry
+  next()
+})
 
 app.use('/', routes)
 
@@ -70,6 +83,8 @@ app.use((req, res, next) => {
   err.status = 404
   next(err)
 })
+
+app.use(Sentry.Handlers.errorHandler())
 
 app.use((err, req, res) => {
   console.error(err)

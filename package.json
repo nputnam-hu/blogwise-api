@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@sentry/node": "^4.6.6",
     "aws-sdk": "^2.396.0",
     "axios": "^0.18.0",
     "bcrypt": "^2.0.1",

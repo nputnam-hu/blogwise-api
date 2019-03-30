@@ -47,6 +47,7 @@ exports.createCustomer = async (req, res, next) => {
     req.stripeCustomerId = customerId
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }

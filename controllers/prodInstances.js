@@ -28,6 +28,7 @@ exports.getOpenInstance = async (req, res, next) => {
     req.openInstance = firstOpenInstance
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -46,6 +47,7 @@ exports.createInstance = async (req, res, next) => {
       const newInstance = await ProdInstance.build(instance)
       return newInstance.save()
     } catch (err) {
+      req.locals.Sentry.captureException(err)
       return next(err)
     }
   })
@@ -61,6 +63,7 @@ exports.getInstance = async (req, res, next) => {
     const prodInstance = await blog.getProdInstance()
     return res.json(prodInstance)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }

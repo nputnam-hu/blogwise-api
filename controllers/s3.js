@@ -14,7 +14,10 @@ async function uploadS3Object(req, res, next, bucketName) {
     ACL: 'public-read',
   }
   s3.getSignedUrl('putObject', s3Params, (err, url) => {
-    if (err) return next(err)
+    if (err) {
+      req.locals.Sentry.captureException(err)
+      return next(err)
+    }
     return res.json(url)
   })
 }

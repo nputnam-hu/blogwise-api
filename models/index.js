@@ -9,7 +9,6 @@ const configdb = require('../config').db[env]
 let sequelize
 
 if (env === 'development') {
-  console.log('in development/models.js')
   sequelize = new Sequelize(
     configdb.database,
     configdb.username,
@@ -17,7 +16,6 @@ if (env === 'development') {
     configdb,
   )
 } else {
-  console.log('initalized developpment db', configdb.databaseURL)
   sequelize = new Sequelize(configdb.databaseURL)
 }
 

@@ -27,6 +27,7 @@ exports.createCalendar = async (req, res, next) => {
     req.body.users.forEach(id => newCalendar.addUser(id))
     return res.json(newCalendar)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -41,6 +42,7 @@ exports.getCalendarFromUser = async (req, res, next) => {
     req.calendar = calendar
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -73,6 +75,7 @@ exports.scheduleInitialPosts = async (req, res, next) => {
     const savedPosts = await Promise.all(promises)
     return res.json({ posts: savedPosts })
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -92,6 +95,7 @@ exports.updatePost = async (req, res, next) => {
     }
     return res.json(post)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -109,6 +113,7 @@ exports.getPosts = async (req, res, next) => {
     }))
     return res.json(labeledPosts)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -133,6 +138,7 @@ exports.getNextPostDue = async (req, res, next) => {
     }
     return res.json(post)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }

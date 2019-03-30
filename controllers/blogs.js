@@ -13,6 +13,7 @@ exports.createBlog = async (req, _, next) => {
     req.blogId = newBlog.id
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -24,6 +25,7 @@ exports.getBlogFromUser = async (req, _, next) => {
     req.blog = blog
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -60,6 +62,7 @@ exports.updateBlog = async (req, res, next) => {
     req.blog = blog
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -75,12 +78,9 @@ async function commitJSON(id, user) {
   const blog = await Blog.findById(id)
   const prodInstance = await blog.getProdInstance()
   const jsonData = {
-    faviconPhotoUri: blog.faviconPhotoUri || '',
     customNavbarLinks: blog.customNavbarLinks || [],
     token: user.token,
-    apiUrl: process.env.DATABASE_URL
-      ? 'https://megaphone-api-prod.herokuapp.com'
-      : 'http://localhost:3001',
+    apiUrl: 'https://megaphone-api-prod.herokuapp.com',
     hasBeenInitialized: true,
   }
   await axios.post(prodInstance.buildHookUrl, jsonData)
@@ -94,6 +94,7 @@ exports.deployBlog = async (req, res, next) => {
     await Blog.update({ hasUpdates: false }, { where: { id: req.blog.id } })
     return res.sendStatus(200)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -103,6 +104,7 @@ exports.setBlogToUpdate = async (req, res, next) => {
     await Blog.update({ hasUpdates: true }, { where: { id: req.blog.id } })
     return next()
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -143,6 +145,7 @@ exports.buildBlog = async (req, res, next) => {
         description: blog.description || '',
         headerPhotoUri: blog.headerPhotoUri || '',
         sidebarPhotoUri: blog.sidebarPhotoUri || '',
+        faviconPhotoUri: blog.faviconPhotoUri || '',
         bgImgUri: blog.bgImgUri || '',
         backgroundHexCode: blog.backgroundHexCode || '',
         mainSiteUrl: blog.mainSiteUrl || '',
@@ -159,6 +162,7 @@ exports.buildBlog = async (req, res, next) => {
     }
     return res.json(responseJson)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -179,6 +183,7 @@ exports.getBlogDeploys = async (req, res, next) => {
     }))
     return res.json(retDeploys)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -196,6 +201,7 @@ exports.updateBlogDomain = async (req, res, next) => {
     })
     return res.sendStatus(200)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -212,6 +218,7 @@ exports.setBlogSSL = async (req, res, next) => {
     })
     return res.sendStatus(200)
   } catch (err) {
+    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
