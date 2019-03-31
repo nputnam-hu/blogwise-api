@@ -13,7 +13,9 @@ const routes = require('./routes')
 const Sentry = require('@sentry/node')
 
 Sentry.init({
-  dsn: 'https://ad71656e9b3b464686df163a72709485@sentry.io/1427417',
+  dsn:
+    process.env.NODE_ENV === 'production' &&
+    'https://ad71656e9b3b464686df163a72709485@sentry.io/1427417',
 })
 
 process.on('unhandledRejection', console.error)
@@ -70,11 +72,6 @@ app.use(
 )
 app.use(cookieParser())
 
-app.use((req, res, next) => {
-  req.locals.Sentry = Sentry
-  next()
-})
-
 app.use('/', routes)
 
 // handle 404
@@ -87,6 +84,7 @@ app.use((req, res, next) => {
 app.use(Sentry.Handlers.errorHandler())
 
 app.use((err, req, res) => {
+  Sentry.captureException(err)
   console.error(err)
   res.status(err.status || 500).send()
 })

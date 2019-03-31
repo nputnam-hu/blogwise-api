@@ -82,9 +82,8 @@ exports.inviteUser = async (req, res, next) => {
     if (err.name == 'SequelizeUniqueConstraintError') {
       return res.status(400).send(errors.makeError(errors.err.EXISTING_EMAIL))
     }
-    req.locals.Sentry.captureException(err)
-req.locals.Sentry.captureException(err)
-return next(err)
+
+    return next(err)
   }
 }
 
@@ -110,8 +109,7 @@ exports.registerInvitedUser = async (req, res, next) => {
       email: user.email,
     })
   } catch (err) {
-    req.locals.Sentry.captureException(err)
-return next(err)
+    return next(err)
   }
 }
 
@@ -143,7 +141,6 @@ exports.updateUser = async (req, res, next) => {
     req.user = user
     return next()
   } catch (err) {
-    req.locals.Sentry.captureException(err)
-return next(err)
+    return next(err)
   }
 }

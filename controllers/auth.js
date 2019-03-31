@@ -1,5 +1,6 @@
 const jwt = require('jwt-simple')
 const crypto = require('crypto')
+const Sentry = require('@sentry/node')
 const { User } = require('../models')
 const config = require('../config')
 const { ses } = require('../config/aws')
@@ -34,7 +35,6 @@ exports.loginUser = async (req, res, next) => {
     await user.save()
     return res.json({ token, type: user.type })
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -76,12 +76,11 @@ async function validateToken(req, res, next, options) {
     req.user = user
     req.id = decoded.id
     // Set scope for sentry
-    req.locals.Sentry.configureScope(scope => {
+    Sentry.configureScope(scope => {
       scope.setUser({ email: user.email, id: user.id })
     })
     return next()
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -122,7 +121,6 @@ exports.changePassword = async (req, res, next) => {
     await user.save()
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -156,7 +154,6 @@ exports.resetPassword = async (req, res, next) => {
     await user.save()
     return res.json({ token: user.token, type: user.type })
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -206,7 +203,6 @@ exports.sendResetToken = async (req, res, next) => {
     await ses.sendEmail(params).promise()
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }

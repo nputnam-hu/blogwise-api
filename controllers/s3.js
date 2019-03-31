@@ -15,7 +15,6 @@ async function uploadS3Object(req, res, next, bucketName) {
   }
   s3.getSignedUrl('putObject', s3Params, (err, url) => {
     if (err) {
-      req.locals.Sentry.captureException(err)
       return next(err)
     }
     return res.json(url)

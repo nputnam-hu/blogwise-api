@@ -28,7 +28,6 @@ exports.createBlogPost = async (req, res, next) => {
     blog.addBlogPost(newBlogPost)
     return res.json(newBlogPost)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -44,7 +43,6 @@ exports.updateBlogPost = async (req, res, next) => {
     }
     return res.json(blogPost)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -61,7 +59,6 @@ exports.getBlogPostById = async (req, res, next) => {
       author: user ? { value: user.id, label: user.name } : '',
     })
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -77,7 +74,6 @@ exports.deleteBlogPostById = async (req, res, next) => {
     }
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -91,7 +87,6 @@ exports.getBlogPosts = async (req, res, next) => {
     })
     return res.json(blogPosts)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -122,7 +117,6 @@ exports.publishBlogPostNow = async (req, res, next) => {
     await deployBlogPost(blogPost, req.user)
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -151,7 +145,6 @@ exports.publishBlogPostLater = async (req, res, next) => {
     await blogPost.save()
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -162,7 +155,6 @@ exports.cancelScheduledPublish = async (req, res, next) => {
     await cancelJobById(blogPost)
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -173,7 +165,6 @@ exports.unpublishBlogPost = async (req, res, next) => {
     await blogPost.update({ hasBeenPublished: false })
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }

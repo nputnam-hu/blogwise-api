@@ -19,7 +19,6 @@ exports.createOrganization = async (req, res, next) => {
       type: req.user.type,
     })
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -31,7 +30,6 @@ exports.getOrganization = async (req, res, next) => {
     org.plan = plan
     return res.json(org)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -43,7 +41,6 @@ exports.updateOrganization = async (req, res, next) => {
     })
     return res.sendStatus(200)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
@@ -54,7 +51,6 @@ exports.getOrganizationUsers = async (req, res, next) => {
     const orgUsers = await org.getUsers()
     return res.json(orgUsers)
   } catch (err) {
-    req.locals.Sentry.captureException(err)
     return next(err)
   }
 }
