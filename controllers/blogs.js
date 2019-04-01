@@ -93,6 +93,13 @@ async function commitJSON(id, user, type) {
     apiUrl: 'https://megaphone-api-prod.herokuapp.com',
     hasBeenInitialized: true,
   }
+  console.log(
+    `${prodInstance.buildHookUrl}?${qs.stringify({
+      trigger_title: deployTitle,
+    })}`,
+  )
+  console.log('BLOG', blog)
+  console.log('BLOG123', prodInstance)
   await axios.post(
     `${prodInstance.buildHookUrl}?${qs.stringify({
       trigger_title: deployTitle,
