@@ -88,7 +88,7 @@ router
 
 router
   .route('/blogs/deploy/admin')
-  .get(auth.validateSuperAdmin, blogs.deployBlogById)
+  .post(auth.validateSuperAdmin, blogs.deployBlogById)
 
 router
   .route('/blogs/build')
