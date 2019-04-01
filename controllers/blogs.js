@@ -103,14 +103,16 @@ async function commitJSON(id, user, type) {
 
 exports.commitJSON = commitJSON
 
-exports.deployAllBlogs = async (req, res, next) => {
+// blogwise admin route to trigger builds automatically
+exports.deployBlogById = async (req, res, next) => {
+  const validationError = errors.missingFields(req.body, [
+    'userToken',
+    'blogId',
+  ])
+  if (validationError) return res.status(400).send(validationError)
   try {
-    const allBlogs = await Blog.find({})
-    const deployBlog = async blog => {
-      await commitJSON(blog.id, req.user)
-      await Blog.update({ hasUpdates: false }, { where: { id: req.blog.id } })
-    }
-    allBlogs.forEach(blog => deployBlog(blog))
+    await commitJSON(req.body.blogId, { token: req.body.userToken })
+    await Blog.update({ hasUpdates: false }, { where: { id: req.body.blogId } })
     return res.sendStatus(200)
   } catch (err) {
     return next(err)
