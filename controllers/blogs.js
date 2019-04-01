@@ -80,10 +80,27 @@ async function commitJSON(id, user) {
     apiUrl: 'https://megaphone-api-prod.herokuapp.com',
     hasBeenInitialized: true,
   }
-  await axios.post(prodInstance.buildHookUrl, jsonData)
+  await axios.post(
+    `${prodInstance.buildHookUrl}?trigger_title=Update+from+admin+dashboard`,
+    jsonData,
+  )
 }
 
 exports.commitJSON = commitJSON
+
+exports.deployAllBlogs = async (req, res, next) => {
+  try {
+    const allBlogs = await Blog.find({})
+    const deployBlog = async blog => {
+      await commitJSON(blog.id, req.user)
+      await Blog.update({ hasUpdates: false }, { where: { id: req.blog.id } })
+    }
+    allBlogs.forEach(blog => deployBlog(blog))
+    return res.sendStatus(200)
+  } catch (err) {
+    return next(err)
+  }
+}
 
 exports.deployBlog = async (req, res, next) => {
   try {
