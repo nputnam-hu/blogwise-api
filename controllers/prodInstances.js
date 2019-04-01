@@ -35,7 +35,7 @@ exports.getOpenInstance = async (req, res, next) => {
 exports.createInstance = async (req, res, next) => {
   const promises = req.body.instances.map(async instance => {
     const validationError = errors.missingFields(instance, [
-      'githubRepo',
+      'buildHookUrl',
       'netlifyUrl',
     ])
     if (validationError) return res.status(400).send(validationError)
