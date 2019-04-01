@@ -86,6 +86,8 @@ router
   .get(auth.validateAdmin, blogs.getBlogFromUser, blogs.getBlogDeploys)
   .post(auth.validateAdmin, blogs.getBlogFromUser, blogs.deployBlog)
 
+// router.route('/bl')
+
 router
   .route('/blogs/build')
   .get(auth.validateUser, blogs.getBlogFromUser, blogs.buildBlog)

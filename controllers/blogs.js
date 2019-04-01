@@ -3,6 +3,7 @@ const { Blog, Organization } = require('../models')
 const client = require('../config/netlify')
 const errors = require('../errors')
 const axios = require('axios')
+const qs = require('querystring')
 const { genHeadlines } = require('../utils/blogIdeas')
 
 exports.createBlog = async (req, _, next) => {
@@ -66,11 +67,23 @@ exports.updateBlog = async (req, res, next) => {
 
 exports.getBlog = (req, res) => res.json(req.blog)
 
-async function commitJSON(id, user) {
+async function commitJSON(id, user, type) {
   // somewhat hacky way of checking if env is prod or dev
   // need to change if change our DB process
   if (!process.env.DATABASE_URL) {
     return
+  }
+  let deployTitle
+  switch (type) {
+    case 'blogPost':
+      deployTitle = 'Blog post publishing'
+      break
+    case 'adminDash':
+      deployTitle = 'Admin update building'
+      break
+    default:
+      deployTitle = 'Update building'
+      break
   }
   const blog = await Blog.findById(id)
   const prodInstance = await blog.getProdInstance()
@@ -81,7 +94,9 @@ async function commitJSON(id, user) {
     hasBeenInitialized: true,
   }
   await axios.post(
-    `${prodInstance.buildHookUrl}?trigger_title=Update+from+admin+dashboard`,
+    `${prodInstance.buildHookUrl}?${qs.stringify({
+      trigger_title: deployTitle,
+    })}`,
     jsonData,
   )
 }
@@ -104,7 +119,7 @@ exports.deployAllBlogs = async (req, res, next) => {
 
 exports.deployBlog = async (req, res, next) => {
   try {
-    await commitJSON(req.blog.id, req.user)
+    await commitJSON(req.blog.id, req.user, 'adminDash')
     await Blog.update({ hasUpdates: false }, { where: { id: req.blog.id } })
     return res.sendStatus(200)
   } catch (err) {
