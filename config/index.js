@@ -5,6 +5,8 @@ module.exports = {
   alertToAdresses: [
     'noahputnam@college.harvard.edu',
     'iseerha@college.harvard.edu',
+    'ahillmann@college.harvard.edu',
+    'wenjia_li@college.harvard.edu',
   ],
   db: {
     development: {
