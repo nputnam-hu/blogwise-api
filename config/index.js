@@ -6,7 +6,7 @@ module.exports = {
     'noahputnam@college.harvard.edu',
     'iseerha@college.harvard.edu',
     'ahillmann@college.harvard.edu',
-    'wenjia_li@college.harvard.edu',
+    'dara@blogwise.co',
   ],
   db: {
     development: {
