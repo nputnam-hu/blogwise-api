@@ -105,13 +105,13 @@ exports.commitJSON = commitJSON
 
 // blogwise admin route to trigger builds automatically
 exports.deployBlogById = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, [
-    'userToken',
-    'blogId',
-  ])
+  const validationError = errors.missingFields(req.body, ['userId'])
   if (validationError) return res.status(400).send(validationError)
   try {
-    await commitJSON(req.body.blogId, { token: req.body.userToken })
+    const user = await User.findById(req.body.userId)
+    const org = await Organization.findById(user.organizationId)
+    const blog = await org.getBlog()
+    await commitJSON(blog.id, user)
     await Blog.update({ hasUpdates: false }, { where: { id: req.body.blogId } })
     return res.sendStatus(200)
   } catch (err) {
