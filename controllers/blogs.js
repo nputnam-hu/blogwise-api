@@ -1,5 +1,5 @@
 const { getColorFromURL } = require('color-thief-node')
-const { Blog, Organization } = require('../models')
+const { Blog, Organization, User } = require('../models')
 const client = require('../config/netlify')
 const errors = require('../errors')
 const axios = require('axios')
