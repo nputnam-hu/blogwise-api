@@ -100,6 +100,10 @@ router
 
 router.route('/blogs/tip').get(auth.validateUser, tipOfTheDay)
 
+router
+  .route('/blogs/migrate')
+  .post(auth.validateSuperAdmin, blogs.migrateBlogDataOver)
+
 /*
  * BlogPost Routes
  */
@@ -178,5 +182,9 @@ router
   .route('/instances')
   .get(auth.validateAdmin, blogs.getBlogFromUser, prodInstances.getInstance)
   .post(auth.validateSuperAdmin, prodInstances.createInstance)
+
+router
+  .route('/instances/auto/:n')
+  .post(auth.validateSuperAdmin, prodInstances.autoCreateInstances)
 
 module.exports = router

@@ -40,17 +40,49 @@ function toHexStr(c) {
 const arrToHexString = ([r, g, b]) =>
   `#${toHexStr(r)}${toHexStr(g)}${toHexStr(b)}`
 
+function getColorByBgColor(bgColor) {
+  if (!bgColor) {
+    return ''
+  }
+  return parseInt(bgColor.replace('#', ''), 16) > 0xffffff / 2 ? '#000' : '#fff'
+}
+
+// admin route, changes as new data migrations occur
+exports.migrateBlogDataOver = async (req, res, next) => {
+  try {
+    const blogs = await Blog.findAll({})
+    await Promise.all(
+      blogs.map(blog => {
+        blog.navbarHexCode = blog.backgroundHexCode
+        blog.headerTextColor = getColorByBgColor(blog.backgroundHexCode)
+        return blog.save()
+      }),
+    )
+    return res.sendStatus(200)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 exports.updateBlog = async (req, res, next) => {
   const {
-    blog: { id },
+    blog: { id, bgImgUri, navbarHexCode, backgroundHexCode },
   } = req
-  // if new background image, set backgroundHex to img's dominant color
-  if (req.body.bgImgUri && req.blog.bgImgUri !== req.body.bgImgUri) {
-    const dominantColor = await getColorFromURL(req.body.bgImgUri)
-    req.body.backgroundHexCode = arrToHexString(dominantColor)
+  const updateBody = { ...req.body }
+  // if new background image, and navbarHexcode is undefined set backgroundHex to img's dominant color
+  if (!navbarHexCode) {
+    if (req.body.bgImgUri && bgImgUri !== req.body.bgImgUri) {
+      const dominantColor = await getColorFromURL(req.body.bgImgUri)
+      updateBody.navbarHexCode = arrToHexString(dominantColor)
+    } else if (
+      req.body.backgroundHexCode &&
+      backgroundHexCode !== req.body.backgroundHexCode
+    ) {
+      updateBody.navbarHexCode = req.body.backgroundHexCode
+    }
   }
   try {
-    const [rowsAffected, blog] = await Blog.update(req.body, {
+    const [rowsAffected, blog] = await Blog.update(updateBody, {
       where: { id },
       returning: true,
       plain: true,
@@ -187,6 +219,8 @@ exports.buildBlog = async (req, res, next) => {
         linkedinUrl: blog.linkedinUrl
           ? `https://www.linkedin.com/${blog.linkedinUrl}`
           : '',
+        headerTextColor: blog.headerTextColor || '',
+        navbarHexCode: blog.navbarHexCode || '',
       },
     }
     return res.json(responseJson)

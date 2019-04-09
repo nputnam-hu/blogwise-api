@@ -33,6 +33,13 @@ module.exports = function defineBlog(sequelize, DataTypes) {
       type: DataTypes.STRING,
       defaultValue: '#ffffff',
     },
+    headerTextColor: {
+      type: DataTypes.STRING,
+      defaultValue: '#000000',
+    },
+    navbarHexCode: {
+      type: DataTypes.STRING,
+    },
     mainSiteUrl: {
       type: DataTypes.STRING,
     },
