@@ -27,6 +27,7 @@ router
   )
   .get(auth.validateAdmin, organizations.getOrganization)
   .put(auth.validateAdmin, organizations.updateOrganization)
+  .delete(auth.validateSuperAdmin, organizations.deleteOrganization)
 
 router
   .route('/organizations/users')
