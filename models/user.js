@@ -43,6 +43,21 @@ module.exports = function defineUser(sequelize, DataTypes) {
       type: DataTypes.STRING,
       defaultValue: config.deafultHeadshot,
     },
+    twitterAccessToken: {
+      type: DataTypes.STRING,
+    },
+    twitterId: {
+      type: DataTypes.STRING,
+    },
+    facebookToken: {
+      type: DataTypes.STRING,
+    },
+    facebookId: {
+      type: DataTypes.STRING,
+    },
+    linkedinToken: {
+      type: DataTypes.STRING,
+    },
   })
 
   // Methods

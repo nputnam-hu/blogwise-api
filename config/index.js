@@ -31,10 +31,29 @@ module.exports = {
     },
   },
   twitter: {
-    consumer_key: process.env.TWITTER_CONSUMER_KEY || null,
-    consumer_secret: process.env.TWITTER_CONSUMER_SECRET || null,
-    access_token_key: process.env.TWITTER_ACCCESS_TOKEN_KEY || null,
-    access_token_secret: process.env.TWITTER_ACCCESS_TOKEN_SECRET || null,
+    consumer_key:
+      // process.env.TWITTER_CONSUMER_KEY ||
+      '922NfmCxa3vaiu8C6EJCzqKHu',
+    consumer_secret:
+      // process.env.TWITTER_CONSUMER_SECRET ||
+      '1OsDYz9joSeEu2SwdcZxbwv9JZ5DQyTHnkkrsUb9IlBGCiX1It',
+    access_token:
+      //process.env.TWITTER_ACCCESS_TOKEN_KEY ||
+      '1050449590800007169-zFx3ew3E8O5CDV7biN5rdVcFMwlHin',
+    access_token_secret:
+      //process.env.TWITTER_ACCCESS_TOKEN_SECRET ||
+      'DOCCSU82RSU0UcDzSUeOtcXMdLKl1kVO18ZM6HeVCzCF7',
+    redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
+  },
+  facebook: {
+    app_id: '1078110902387157',
+    app_secret: 'd9012f6c769ff7f3f8edca855bc54296',
+    redirect_uri: 'https%3A%2F%2Fwww.blogwise.co/',
+  },
+  linkedin: {
+    client_id: '78lfgcpfr5idxn',
+    client_secret: 'fMC2Eq6BLjVUaE0e',
+    redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
   },
   stripeApiToken: process.env.STRIPE_API_TOKEN || null,
   netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,

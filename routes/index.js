@@ -8,6 +8,7 @@ const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
 const blogPosts = require('../controllers/blogPosts')
 const calendars = require('../controllers/calendars')
+const api = require('../controllers/api')
 const tipOfTheDay = require('../utils/tipOfTheDay')
 
 const router = express.Router()
@@ -187,5 +188,22 @@ router
 router
   .route('/instances/auto/:n')
   .post(auth.validateSuperAdmin, prodInstances.autoCreateInstances)
+/*
+ * Social Media Routes
+ */
+
+router.route('/api/twitter/reverse').post(api.authToken)
+router.route('/api/twitter').post(api.accessToken)
+router
+  .route('/api/twitter/storetoken')
+  .post(auth.validateUser, api.storeTwitterToken)
+
+router
+  .route('/api/facebook/storetoken')
+  .post(auth.validateUser, api.storeFbToken)
+
+router
+  .route('/api/linkedin/storetoken')
+  .post(auth.validateUser, api.linkedinToken)
 
 module.exports = router
