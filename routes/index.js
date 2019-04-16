@@ -7,6 +7,7 @@ const users = require('../controllers/users')
 const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
 const blogPosts = require('../controllers/blogPosts')
+const blogBot = require('../controllers/blogBot')
 const calendars = require('../controllers/calendars')
 const tipOfTheDay = require('../utils/tipOfTheDay')
 
@@ -174,6 +175,12 @@ router.route('/auth/login').post(auth.loginUser)
 router.route('/auth/forgot').post(auth.sendResetToken)
 
 router.route('/auth/reset').put(auth.resetPassword)
+
+/*
+ * Blogbot Routes
+ */
+router.route('/blogbot/image').post(auth.validateUser, blogBot.suggestImage)
+
 
 /*
  * Prod Instance Routes
