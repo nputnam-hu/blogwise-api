@@ -70,15 +70,55 @@ exports.getInstance = async (req, res, next) => {
 }
 
 exports.autoCreateInstances = async (req, res, next) => {
-  //   const n = parseInt(req.qeury.n, 10)
-  //   if (!n) {
-  //     return res.status(400).send('n must be an integer')
-  //   }
-  //   try {
-  //   const siteOptions = {}
-  //   _.range(n).map(async () => {
-  //     const site = await client.createSite(siteOptions)
-  //     return site
-  //   })
-  // } catch(err)
+  const deployKeyObj = await client.createDeployKey()
+
+  siteOption = {
+    name: null,
+    custom_domain: null,
+    password: null,
+    user_id: '5c2d23ef820efea2c62fa226',
+    force_ssl: null,
+    account_slug: 'nputnam-hu',
+    account_name: "Noah Putnam's team",
+    account_type: 'personal',
+    deploy_hook: 'https://api.netlify.com/hooks/github',
+    processing_settings: {
+      css: { bundle: true, minify: true },
+      js: { bundle: true, minify: true },
+      images: { optimize: true },
+      html: { pretty_urls: true },
+      skip: true,
+    },
+    repo: {
+      id: 171395074,
+      provider: 'github',
+      deploy_key_id: deployKeyObj['id'],
+      repo_path: 'nputnam-hu/blogwise-template-1-canonical',
+      repo_branch: 'master',
+      repo_url: 'https://github.com/nputnam-hu/blogwise-template-1-canonical',
+      dir: 'public',
+      cmd: 'npm run build',
+      allowed_branches: ['master'],
+      public_repo: true,
+      private_logs: null,
+      installation_id: 653696,
+      env: {},
+    },
+  }
+
+  const site = await client.createSite({ body: siteOption })
+
+  hookOptions = {
+    site_id: site.site_id,
+    buildHook: {},
+  }
+
+  const buildHook = await client.createSiteBuildHook(hookOptions)
+
+  const newInstance = await ProdInstance.create({
+    buildHookUrl: buildHook.url,
+    netlifyUrl: site.url,
+  })
+
+  return res.json(newInstance)
 }
