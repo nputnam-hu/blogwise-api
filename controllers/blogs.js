@@ -236,13 +236,16 @@ exports.getBlogDeploys = async (req, res, next) => {
     const deploys = await client.listSiteDeploys({
       site_id: prodInstance.netlifyUrl.replace(/https:\/\//, ''),
     })
-    const retDeploys = deploys.slice(0, 3).map(d => ({
-      id: d.id,
-      state: d.state,
-      published_at: d.published_at,
-      created_at: d.created_at,
-      title: d.title,
-    }))
+    const retDeploys = deploys
+      .filter(d => d.branch === 'master')
+      .slice(0, 3)
+      .map(d => ({
+        id: d.id,
+        state: d.state,
+        published_at: d.published_at,
+        created_at: d.created_at,
+        title: d.title,
+      }))
     return res.json(retDeploys)
   } catch (err) {
     return next(err)
