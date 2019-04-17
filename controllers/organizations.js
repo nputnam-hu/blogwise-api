@@ -77,13 +77,13 @@ exports.deleteOrganization = async (req, res, next) => {
     await prodInstance.save()
     const jsonData = {
       customNavbarLinks: [],
-      token: user.token,
+      token: '',
       apiUrl: 'https://megaphone-api-prod.herokuapp.com',
       hasBeenInitialized: false,
     }
     await axios.post(
       `${prodInstance.buildHookUrl}?${qs.stringify({
-        trigger_title: deployTitle,
+        trigger_title: 'Update Blog',
       })}`,
       jsonData,
     )
