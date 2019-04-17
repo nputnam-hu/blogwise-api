@@ -8,7 +8,7 @@ const configdb = require('../config').db[env]
 
 let sequelize
 
-if (env === 'development') {
+if (env === 'developmet') {
   sequelize = new Sequelize(
     configdb.database,
     configdb.username,
@@ -16,7 +16,12 @@ if (env === 'development') {
     configdb,
   )
 } else {
-  sequelize = new Sequelize(configdb.databaseURL)
+  sequelize = new Sequelize(configdb.databaseURL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true,
+    },
+  })
 }
 
 const db = {}
