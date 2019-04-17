@@ -19,9 +19,9 @@ const router = express.Router()
 router
   .route('/organizations')
   .post(
+    users.creatFirstUser,
     prodInstances.getOpenInstance,
     blogs.createBlog,
-    users.creatFirstUser,
     payments.createCustomer,
     organizations.createOrganization,
   )

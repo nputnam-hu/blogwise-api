@@ -238,7 +238,7 @@ exports.getBlogDeploys = async (req, res, next) => {
     })
     const retDeploys = deploys
       .filter(d => d.branch === 'master')
-      .slice(0, 5)
+      .slice(0, 4)
       .map(d => ({
         id: d.id,
         state: d.state,
