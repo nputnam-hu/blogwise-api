@@ -16,7 +16,12 @@ if (env === 'development') {
     configdb,
   )
 } else {
-  sequelize = new Sequelize(configdb.databaseURL)
+  sequelize = new Sequelize(configdb.databaseURL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true,
+    },
+  })
 }
 
 const db = {}
