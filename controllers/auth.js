@@ -25,15 +25,8 @@ exports.loginUser = async (req, res, next) => {
         .send(errors.makeError(errors.err.INCORRECT_PASSWORD))
 
     // add relevant data to token
-    const payload = {
-      id: user.id,
-      email: user.email,
-    }
-
-    const token = jwt.encode(payload, config.tokenSecret)
-    user.token = token
-    await user.save()
-    return res.json({ token, type: user.type })
+    const { token, type } = user
+    return res.json({ token, type })
   } catch (err) {
     return next(err)
   }

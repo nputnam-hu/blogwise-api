@@ -43,6 +43,9 @@ const headlines = [
     )} Free Resources to Help You Learn More About ${noun}`,
   noun =>
     `${randomClickbaitNumber()} Common Misconceptions People Have About ${noun}`,
+  noun => `${noun}: Expectation versus Reality`,
+  noun => `The next big trend in ${noun}`,
+  noun => `This weeks most interesting stories about ${noun}`,
 ]
 
 const genHeadlines = (nouns, n = 3) => {

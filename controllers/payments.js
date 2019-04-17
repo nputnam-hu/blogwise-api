@@ -17,6 +17,10 @@ const STRIPE_ID_PLANS = {
 }
 
 exports.createCustomer = async (req, res, next) => {
+  if (process.env.NODE_ENV === 'development') {
+    req.stripeCustomerId = '<test_id>'
+    return next()
+  }
   try {
     const customerId = await new Promise((resolve, reject) => {
       stripe.customers.create(

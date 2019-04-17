@@ -1,6 +1,8 @@
 const { ProdInstance, Blog } = require('../models')
 const { sendAlertEmail } = require('../utils')
 const errors = require('../errors')
+const client = require('../config/netlify')
+const _ = require('lodash')
 
 exports.getOpenInstance = async (req, res, next) => {
   try {
@@ -65,4 +67,18 @@ exports.getInstance = async (req, res, next) => {
   } catch (err) {
     return next(err)
   }
+}
+
+exports.autoCreateInstances = async (req, res, next) => {
+  //   const n = parseInt(req.qeury.n, 10)
+  //   if (!n) {
+  //     return res.status(400).send('n must be an integer')
+  //   }
+  //   try {
+  //   const siteOptions = {}
+  //   _.range(n).map(async () => {
+  //     const site = await client.createSite(siteOptions)
+  //     return site
+  //   })
+  // } catch(err)
 }
