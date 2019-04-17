@@ -55,6 +55,7 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     },
     tags: {
       type: DataTypes.JSONB,
+      defaultValue: [],
     },
     hasUpdates: {
       type: DataTypes.BOOLEAN,

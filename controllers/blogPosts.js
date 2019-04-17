@@ -1,7 +1,7 @@
 const schedule = require('node-schedule')
 const _ = require('lodash')
 const moment = require('moment')
-const { BlogPost, Blog } = require('../models')
+const { BlogPost, Blog, User } = require('../models')
 const { commitJSON } = require('./blogs')
 const errors = require('../errors')
 
@@ -83,7 +83,7 @@ exports.getBlogPosts = async (req, res, next) => {
   try {
     const blog = await Blog.findById(id)
     const blogPosts = await blog.getBlogPosts({
-      order: [['publishDate', 'DESC']],
+      include: [{ model: User }],
     })
     return res.json(blogPosts)
   } catch (err) {
