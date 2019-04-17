@@ -8,7 +8,7 @@ const configdb = require('../config').db[env]
 
 let sequelize
 
-if (env === 'developmet') {
+if (env === 'development') {
   sequelize = new Sequelize(
     configdb.database,
     configdb.username,
