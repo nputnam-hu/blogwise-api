@@ -2,7 +2,7 @@ const { ProdInstance, Blog } = require('../models')
 const { sendAlertEmail } = require('../utils')
 const errors = require('../errors')
 const client = require('../config/netlify')
-const _ = require('lodash')
+const normalizeUrl = require('normalize-url')
 
 exports.getOpenInstance = async (req, res, next) => {
   try {
@@ -72,7 +72,7 @@ exports.getInstance = async (req, res, next) => {
 exports.autoCreateInstances = async (req, res, next) => {
   const deployKeyObj = await client.createDeployKey()
 
-  siteOption = {
+  const siteOption = {
     name: null,
     custom_domain: null,
     password: null,
@@ -92,7 +92,7 @@ exports.autoCreateInstances = async (req, res, next) => {
     repo: {
       id: 171395074,
       provider: 'github',
-      deploy_key_id: deployKeyObj['id'],
+      deploy_key_id: deployKeyObj.id,
       repo_path: 'nputnam-hu/blogwise-template-1-canonical',
       repo_branch: 'master',
       repo_url: 'https://github.com/nputnam-hu/blogwise-template-1-canonical',
@@ -108,7 +108,7 @@ exports.autoCreateInstances = async (req, res, next) => {
 
   const site = await client.createSite({ body: siteOption })
 
-  hookOptions = {
+  const hookOptions = {
     site_id: site.site_id,
     buildHook: {},
   }
@@ -117,7 +117,7 @@ exports.autoCreateInstances = async (req, res, next) => {
 
   const newInstance = await ProdInstance.create({
     buildHookUrl: buildHook.url,
-    netlifyUrl: site.url,
+    netlifyUrl: normalizeUrl(site.url, { forceHttps: true }),
   })
 
   return res.json(newInstance)

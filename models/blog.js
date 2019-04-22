@@ -1,3 +1,6 @@
+const DEFAULT_INDEX_IMG =
+  'https://s3.amazonaws.com/megaphone-logo-uploads/defaultLogo.png'
+
 module.exports = function defineBlog(sequelize, DataTypes) {
   const Blog = sequelize.define('Blog', {
     id: {
@@ -22,9 +25,11 @@ module.exports = function defineBlog(sequelize, DataTypes) {
     },
     headerPhotoUri: {
       type: DataTypes.STRING,
+      defaultValue: DEFAULT_INDEX_IMG,
     },
     sidebarPhotoUri: {
       type: DataTypes.STRING,
+      defaultValue: DEFAULT_INDEX_IMG,
     },
     faviconPhotoUri: {
       type: DataTypes.STRING,
