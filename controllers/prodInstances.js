@@ -94,7 +94,7 @@ exports.autoCreateInstances = async (req, res, next) => {
       provider: 'github',
       deploy_key_id: deployKeyObj.id,
       repo_path: 'nputnam-hu/blogwise-template-1-canonical',
-      repo_branch: 'master',
+      repo_branch: 'deploy',
       repo_url: 'https://github.com/nputnam-hu/blogwise-template-1-canonical',
       dir: 'public',
       cmd: 'npm run build',
