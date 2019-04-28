@@ -17,7 +17,13 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     facebookToken: {
       type: DataTypes.TEXT,
     },
+    facebookPageToken: {
+      type: DataTypes.TEXT,
+    },
     linkedinToken: {
+      type: DataTypes.TEXT,
+    },
+    linkedinId: {
       type: DataTypes.TEXT,
     },
     surveyAnswer: {

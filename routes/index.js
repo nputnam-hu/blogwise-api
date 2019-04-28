@@ -203,6 +203,10 @@ router
   .post(auth.validateUser, api.storeFbToken)
 
 router
+  .route('/api/facebook/pagetoken')
+  .post(auth.validateUser, api.getPageToken)
+
+router
   .route('/api/linkedin/storetoken')
   .post(auth.validateUser, api.linkedinToken)
 
