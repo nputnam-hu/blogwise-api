@@ -8,6 +8,18 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     stripeToken: {
       type: DataTypes.STRING,
     },
+    twitterToken: {
+      type: DataTypes.TEXT,
+    },
+    twitterTokenSecret: {
+      type: DataTypes.TEXT,
+    },
+    facebookToken: {
+      type: DataTypes.TEXT,
+    },
+    linkedinToken: {
+      type: DataTypes.TEXT,
+    },
     surveyAnswer: {
       type: DataTypes.STRING,
     },
