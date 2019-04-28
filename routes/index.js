@@ -206,4 +206,8 @@ router
   .route('/api/linkedin/storetoken')
   .post(auth.validateUser, api.linkedinToken)
 
+router
+  .route('/api/shareall')
+  .post(auth.validateUser, api.sharefb, api.sharetw, api.sharelk)
+
 module.exports = router
