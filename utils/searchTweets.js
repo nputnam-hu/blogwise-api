@@ -25,7 +25,9 @@ module.exports = (title, tags) =>
       const titleNouns = await wordpos.getNouns(title.toLowerCase())
       const nounQuery = titleNouns.filter(s => !parseInt(s, 10)).join(' ')
       const tweets = await client.get('/search/tweets', {
-        q: `${tags.map(t => `#${t.toLowerCase()}`).join(' OR ')} filter:links`,
+        q: `${tags
+          .map(t => `#${t.toLowerCase().replace(/ /g, '')}`)
+          .join(' OR ')} filter:links`,
         result_type: 'popular',
         count: 10,
       })
