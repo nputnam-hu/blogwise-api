@@ -1,4 +1,3 @@
-const { getColorFromURL } = require('color-thief-node')
 const { Blog, Organization, User } = require('../models')
 const client = require('../config/netlify')
 const errors = require('../errors')
@@ -71,10 +70,7 @@ exports.updateBlog = async (req, res, next) => {
   const updateBody = { ...req.body }
   // if new background image, and navbarHexcode is undefined set backgroundHex to img's dominant color
   if (!navbarHexCode) {
-    if (req.body.bgImgUri && bgImgUri !== req.body.bgImgUri) {
-      const dominantColor = await getColorFromURL(req.body.bgImgUri)
-      updateBody.navbarHexCode = arrToHexString(dominantColor)
-    } else if (
+    if (
       req.body.backgroundHexCode &&
       backgroundHexCode !== req.body.backgroundHexCode
     ) {
