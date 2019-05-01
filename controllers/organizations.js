@@ -1,5 +1,8 @@
 const { Organization, User, Blog } = require('../models')
-const { getCustomerPlanFromStripeToken } = require('./payments')
+const {
+  getCustomerPlanFromStripeToken,
+  getCustomerInvoices,
+} = require('./payments')
 const axios = require('axios')
 
 exports.createOrganization = async (req, res, next) => {
@@ -27,9 +30,11 @@ exports.createOrganization = async (req, res, next) => {
 exports.getOrganization = async (req, res, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)
-    const plan = await getCustomerPlanFromStripeToken(org.stripeToken)
-    org.plan = plan
-    return res.json(org)
+    const stripeData = {
+      ...(await getCustomerPlanFromStripeToken(org.stripeToken)),
+      ...(await getCustomerInvoices(org.stripeToken)),
+    }
+    return res.json(stripeData)
   } catch (err) {
     return next(err)
   }

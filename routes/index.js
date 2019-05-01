@@ -33,6 +33,14 @@ router
   .route('/organizations/users')
   .get(auth.validateAdmin, organizations.getOrganizationUsers)
 
+router
+  .route('/organizations/creditcard')
+  .put(auth.validateAdmin, payments.addCcToOrg)
+
+router
+  .route('/organizations/plans')
+  .put(auth.validateAdmin, payments.updateCustomerPlan)
+
 /*
  * User Routes
  */
