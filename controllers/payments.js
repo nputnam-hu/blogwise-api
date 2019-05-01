@@ -147,14 +147,12 @@ exports.getCustomerPlanFromStripeToken = async stripeToken => {
       if (customer.subscriptions.data.length === 0) {
         throw new Error(`Customer Has No Subs, id: ${stripeToken}`)
       }
-      console.log('\n\n', customer.default_source, '\n\n')
+      const card = customer.sources.data.filter(s => s.object === 'card')[0]
       return resolve({
         planId: customer.subscriptions.data[0].plan.id,
         trialEnd: customer.subscriptions.data[0].trial_end,
-        lastFour: customer.sources.data[0]
-          ? customer.sources.data[0].last4
-          : null,
-        brand: customer.sources.data[0] ? customer.sources.data[0].brand : null,
+        lastFour: card ? card.last4 : '',
+        brand: card ? card.brand : '',
       })
     })
   })

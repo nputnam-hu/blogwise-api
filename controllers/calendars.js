@@ -78,6 +78,7 @@ exports.scheduleInitialPosts = async (req, res, next) => {
 }
 
 exports.updatePost = async (req, res, next) => {
+  console.log('HERE', req.body)
   const validationError = errors.missingFields(req.body, ['id', 'post'])
   if (validationError) return res.status(400).send(validationError)
 
