@@ -147,6 +147,7 @@ exports.getCustomerPlanFromStripeToken = async stripeToken => {
       if (customer.subscriptions.data.length === 0) {
         throw new Error(`Customer Has No Subs, id: ${stripeToken}`)
       }
+      console.log(customer.sources.data)
       return resolve({
         planId: customer.subscriptions.data[0].plan.id,
         trialEnd: customer.subscriptions.data[0].trial_end,
@@ -157,6 +158,7 @@ exports.getCustomerPlanFromStripeToken = async stripeToken => {
       })
     })
   })
+  console.log('CARD', rest)
   const now = moment()
   momentTrialEnd = moment.unix(trialEnd)
   const trialDaysLeft = Math.max(
