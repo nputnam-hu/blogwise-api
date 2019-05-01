@@ -64,21 +64,21 @@ exports.addCcToOrg = async (req, res, next) => {
   if (validationError) return res.status(400).send(validationError)
   try {
     const org = await Organization.findById(req.user.organizationId)
-    await new Promise((resolve, reject) => {
+    const cardData = await new Promise((resolve, reject) => {
       stripe.customers.createSource(
         org.stripeToken,
         {
           source: req.body.source,
         },
-        err => {
+        (err, card) => {
           if (err) {
             return reject(err)
           }
-          return resolve()
+          return resolve({ lastFour: card.last4, brand: card.brand })
         },
       )
     })
-    return res.sendStatus(200)
+    return res.json(cardData)
   } catch (err) {
     return next(err)
   }
@@ -156,7 +156,6 @@ exports.getCustomerPlanFromStripeToken = async stripeToken => {
       })
     })
   })
-  console.log('CARD', rest)
   const now = moment()
   momentTrialEnd = moment.unix(trialEnd)
   const trialDaysLeft = Math.max(
