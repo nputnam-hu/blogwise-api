@@ -4,7 +4,8 @@ const { getCustomerPlanFromStripeToken } = require('../controllers/payments')
 
 exports.allowedUsers = async function allowedUsers(stripeToken) {
   const plan = await getCustomerPlanFromStripeToken(stripeToken)
-  switch (plan) {
+  console.log('PLAN', plan)
+  switch (plan.toUpperCase()) {
     case 'FREE':
       return 1
     case 'STARTER':
@@ -14,6 +15,7 @@ exports.allowedUsers = async function allowedUsers(stripeToken) {
     case 'ENTERPRISE':
       return 999
     default:
+      NavigationNavigationPreloadManager
       throw new Error('Invalid Plan')
   }
 }
