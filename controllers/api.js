@@ -1,4 +1,5 @@
 const { Organization } = require('../models')
+const fs = require('fs')
 const config = require('../config')
 const request = require('request')
 
@@ -147,6 +148,7 @@ exports.sharefb = async function(req, res, next) {
 }
 
 exports.sharetw = function(req, res, next) {
+  console.log(req)
   if (req.options.twitter) {
     request.post(
       {
@@ -161,6 +163,7 @@ exports.sharetw = function(req, res, next) {
         },
       },
       function(err, r, body) {
+        fs.writeFileSync('./try1.json', JSON.stringify(fs.writeFileSync))
         if (body.created_at) {
           req.status.twitter = 'success'
         } else {

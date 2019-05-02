@@ -33,10 +33,10 @@ module.exports = {
   twitter: {
     consumer_key:
       // process.env.TWITTER_CONSUMER_KEY ||
-      '922NfmCxa3vaiu8C6EJCzqKHu',
+      '46EOkfEGDuftWDE0vLRwOAJfp',
     consumer_secret:
       // process.env.TWITTER_CONSUMER_SECRET ||
-      '1OsDYz9joSeEu2SwdcZxbwv9JZ5DQyTHnkkrsUb9IlBGCiX1It',
+      '8LQDt7sQVXrYYsdxLx6pWRTqkSTlVN204MtXoGgq1VdPVKd5BS',
     access_token:
       //process.env.TWITTER_ACCCESS_TOKEN_KEY ||
       '1050449590800007169-zFx3ew3E8O5CDV7biN5rdVcFMwlHin',

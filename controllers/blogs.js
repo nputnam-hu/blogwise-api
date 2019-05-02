@@ -22,6 +22,7 @@ exports.getBlogFromUser = async (req, _, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)
     const blog = await org.getBlog()
+    console.log(blog)
     req.blog = blog
     return next()
   } catch (err) {

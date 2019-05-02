@@ -1,0 +1,8 @@
+{
+  "consumer_key": "46EOkfEGDuftWDE0vLRwOAJfp",
+  "consumer_secret": "8LQDt7sQVXrYYsdxLx6pWRTqkSTlVN204MtXoGgq1VdPVKd5BS",
+  "token": "1050449590800007169-pgwbDxvUElhUl9oaKX2GnaUyo8Wn4D",
+  "token_secret": "XX4hHACEFGZHUujmTDOMPG0LMaSuDNaCuBSEihN3jZIe1",
+  "err": null,
+  "body": "{\"errors\":[{\"code\":32,\"message\":\"Could not authenticate you.\"}]}"
+}
