@@ -3,9 +3,8 @@ const { ses } = require('../config/aws')
 const { getCustomerPlanFromStripeToken } = require('../controllers/payments')
 
 exports.allowedUsers = async function allowedUsers(stripeToken) {
-  const plan = await getCustomerPlanFromStripeToken(stripeToken)
-  console.log('PLAN', plan)
-  switch (plan.toUpperCase()) {
+  const { plan } = await getCustomerPlanFromStripeToken(stripeToken)
+  switch (plan) {
     case 'FREE':
       return 1
     case 'STARTER':
