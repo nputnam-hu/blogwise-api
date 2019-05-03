@@ -148,24 +148,16 @@ router
  * Calendar Routes
  */
 
-router.route('/calendars').post(auth.validateUser, calendars.createCalendar)
+// router.route('/calendars').post(auth.validateUser, calendars.createCalendar)
 router
   .route('/calendars/posts')
-  .get(auth.validateUser, calendars.getCalendarFromUser, calendars.getPosts)
-  .post(
-    auth.validateUser,
-    calendars.getCalendarFromUser,
-    calendars.scheduleInitialPosts,
-  )
+  .get(auth.validateUser, calendars.getCalendarFromUser)
+  .post(auth.validateUser, calendars.scheduleNewPost)
   .put(auth.validateUser, calendars.updatePost)
 
 router
   .route('/calendars/posts/next')
-  .get(
-    auth.validateUser,
-    calendars.getCalendarFromUser,
-    calendars.getNextPostDue,
-  )
+  .get(auth.validateUser, calendars.getNextPostDue)
 
 /*
  * S3 Routes

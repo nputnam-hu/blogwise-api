@@ -1,77 +1,53 @@
 const moment = require('moment')
 const _ = require('lodash')
-const { Organization, CalendarPost } = require('../models')
+const { Organization, CalendarPost, User } = require('../models')
 const errors = require('../errors')
 const searchTweets = require('../utils/searchTweets')
-
-exports.createCalendar = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, [
-    'startDate',
-    'endDate',
-    'users',
-  ])
-  if (validationError) return res.status(400).send(validationError)
-
-  const newCalendar = await Calendar.build({
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-  })
-  if (!newCalendar) {
-    return res.status(400).send('Could not create user')
-  }
-
-  try {
-    await newCalendar.save()
-    const org = await Organization.findById(req.user.organizationId)
-    org.setCalendar(newCalendar)
-    req.body.users.forEach(id => newCalendar.addUser(id))
-    return res.json(newCalendar)
-  } catch (err) {
-    return next(err)
-  }
-}
 
 exports.getCalendarFromUser = async (req, res, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)
-    const calendarPosts = await org.getCalendarPosts()
-    if (!calendarPosts) {
+    const posts = await org.getCalendarPosts()
+    if (!posts) {
       return res.json(null)
     }
-    req.calendar = calendarPosts
-    return next()
+    const labeledPosts = posts.map(post => ({
+      id: post.id,
+      title: post.title,
+      dueDate: post.dueDate,
+      tags: post.tags,
+      author: post.authorId,
+      relevantTweets: post.relevantTweets,
+    }))
+    return res.json(labeledPosts)
   } catch (err) {
     return next(err)
   }
 }
 
-exports.scheduleInitialPosts = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, ['posts'])
+exports.scheduleNewPost = async (req, res, next) => {
+  const validationError = errors.missingFields(req.body, [
+    'title',
+    'authorId',
+    'dueDate',
+    'tags',
+    'user',
+  ])
   if (validationError) return res.status(400).send(validationError)
-
-  const { posts } = req.body
-  let { startDate, endDate } = req.calendar
-  startDate = moment(startDate)
-  endDate = moment(endDate)
-  const days = endDate.diff(startDate, 'days')
-  const datedPosts = _.range(0, days, days / posts.length).map((n, i) => {
-    return {
-      ...posts[i],
-      dueDate: startDate
-        .clone()
-        .add(Math.floor(n), 'days')
-        .set('hour', 13),
-    }
-  })
+  const { title, authorId, dueDate, tags, user } = req.body
   try {
-    const calendar = await Calendar.findById(req.calendar.id)
-    const promises = datedPosts.map(async post => {
-      const newPost = await CalendarPost.build(post)
-      calendar.addPosts([newPost])
-      return newPost.save()
-    })
-    const savedPosts = await Promise.all(promises)
-    return res.json({ posts: savedPosts })
+    const newPost = await CalendarPost.create({ title, dueDate, tags })
+    const author = await User.findById(authorId)
+    await newPost.setAuthor(author)
+    const organization = await Organization.findById(user.organizationId)
+    await organization.addCalendarPosts(newPost)
+    await newPost.save()
+    newPost.relevantTweets = await searchTweets(
+      newPost.title,
+      newPost.tags.map(t => t.label),
+    )
+    await newPost.save()
+    return res.json({ post: savedPost })
   } catch (err) {
     return next(err)
   }
@@ -97,29 +73,12 @@ exports.updatePost = async (req, res, next) => {
   }
 }
 
-exports.getPosts = async (req, res, next) => {
-  const { id } = req.calendar
-  try {
-    const calendar = await Calendar.findById(id)
-    const posts = await calendar.getPosts()
-    const labeledPosts = posts.map(post => ({
-      id: post.id,
-      title: post.title,
-      dueDate: post.dueDate,
-      tags: post.tags,
-    }))
-    return res.json(labeledPosts)
-  } catch (err) {
-    return next(err)
-  }
-}
-
 exports.getNextPostDue = async (req, res, next) => {
-  const { id } = req.calendar
+  const org = await Organization.findById(req.user.organizationId)
   try {
     const post = await CalendarPost.findOne({
       where: {
-        calendarId: id,
+        OrganizationId: org,
         dueDate: { $gt: moment() },
       },
       order: [['dueDate', 'ASC']],
