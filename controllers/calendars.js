@@ -3,6 +3,8 @@ const _ = require('lodash')
 const { Organization, CalendarPost, User } = require('../models')
 const errors = require('../errors')
 const searchTweets = require('../utils/searchTweets')
+const newCalendarPost = require('../emails/newCalendarPost')
+const { ses } = require('../config/aws')
 
 exports.getCalendarFromUser = async (req, res, next) => {
   try {
@@ -42,12 +44,28 @@ exports.scheduleNewPost = async (req, res, next) => {
     const organization = await Organization.findById(user.organizationId)
     await organization.addCalendarPosts(newPost)
     await newPost.save()
-    newPost.relevantTweets = await searchTweets(
-      newPost.title,
-      newPost.tags.map(t => t.label),
-    )
+    newPost.relevantTweets = await searchTweets(newPost.title, newPost.tags)
     await newPost.save()
-    return res.json({ post: savedPost })
+    const params = {
+      Destination: {
+        ToAddresses: [author.email],
+      },
+      Message: {
+        Body: {
+          Text: {
+            Charset: 'UTF-8',
+            Data: newCalendarPost(title, tags, dueDate),
+          },
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: `New post assigned!`,
+        },
+      },
+      Source: 'blogwise Team <support@blogwise.co>',
+    }
+    await ses.sendEmail(params).promise()
+    return res.json({ post: newPost })
   } catch (err) {
     return next(err)
   }
