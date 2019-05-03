@@ -11,7 +11,7 @@ exports.getCalendarFromUser = async (req, res, next) => {
     const org = await Organization.findById(req.user.organizationId)
     const posts = await org.getCalendarPosts()
     if (!posts) {
-      return res.json(null)
+      return res.json([])
     }
     const labeledPosts = posts.map(post => ({
       id: post.id,
@@ -33,46 +33,47 @@ exports.scheduleNewPost = async (req, res, next) => {
     'authorId',
     'dueDate',
     'tags',
-    'user',
   ])
   if (validationError) return res.status(400).send(validationError)
-  const { title, authorId, dueDate, tags, user } = req.body
+  console.log('BODY', req.body)
+  const { title, authorId, dueDate, tags } = req.body
   try {
     const newPost = await CalendarPost.create({ title, dueDate, tags })
-    const author = await User.findById(authorId)
-    await newPost.setAuthor(author)
-    const organization = await Organization.findById(user.organizationId)
+    if (authorId) {
+      const author = await User.findById(authorId)
+      await newPost.setAuthor(author)
+    }
+    const organization = await Organization.findById(req.user.organizationId)
     await organization.addCalendarPosts(newPost)
     await newPost.save()
-    newPost.relevantTweets = await searchTweets(newPost.title, newPost.tags)
-    await newPost.save()
-    const params = {
-      Destination: {
-        ToAddresses: [author.email],
-      },
-      Message: {
-        Body: {
-          Text: {
-            Charset: 'UTF-8',
-            Data: newCalendarPost(title, tags, dueDate),
-          },
-        },
-        Subject: {
-          Charset: 'UTF-8',
-          Data: `New post assigned!`,
-        },
-      },
-      Source: 'blogwise Team <support@blogwise.co>',
-    }
-    await ses.sendEmail(params).promise()
-    return res.json({ post: newPost })
+    // newPost.relevantTweets = await searchTweets(newPost.title, newPost.tags)
+    // await newPost.save()
+    // const params = {
+    //   Destination: {
+    //     ToAddresses: [author.email],
+    //   },
+    //   Message: {
+    //     Body: {
+    //       Text: {
+    //         Charset: 'UTF-8',
+    //         Data: newCalendarPost(title, tags, dueDate),
+    //       },
+    //     },
+    //     Subject: {
+    //       Charset: 'UTF-8',
+    //       Data: `New post assigned!`,
+    //     },
+    //   },
+    //   Source: 'blogwise Team <support@blogwise.co>',
+    // }
+    // await ses.sendEmail(params).promise()
+    return res.json(newPost)
   } catch (err) {
     return next(err)
   }
 }
 
 exports.updatePost = async (req, res, next) => {
-  console.log('HERE', req.body)
   const validationError = errors.missingFields(req.body, ['id', 'post'])
   if (validationError) return res.status(400).send(validationError)
 
@@ -92,23 +93,22 @@ exports.updatePost = async (req, res, next) => {
 }
 
 exports.getNextPostDue = async (req, res, next) => {
-  const org = await Organization.findById(req.user.organizationId)
   try {
     const post = await CalendarPost.findOne({
       where: {
-        OrganizationId: org,
+        OrganizationId: req.user.organizationId,
         dueDate: { $gt: moment() },
       },
       order: [['dueDate', 'ASC']],
     })
     if (!post) return res.json({})
-    if (post.relevantTweets.length === 0) {
-      post.relevantTweets = await searchTweets(
-        post.title,
-        post.tags.map(t => t.label),
-      )
-      await post.save()
-    }
+    // if (post.relevantTweets.length === 0) {
+    //   post.relevantTweets = await searchTweets(
+    //     post.title,
+    //     post.tags.map(t => t.label),
+    //   )
+    //   await post.save()
+    // }
     return res.json(post)
   } catch (err) {
     return next(err)

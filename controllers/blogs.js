@@ -1,4 +1,5 @@
 const { Blog, Organization, User } = require('../models')
+const searchTweets = require('../utils/searchTweets')
 const client = require('../config/netlify')
 const errors = require('../errors')
 const axios = require('axios')
@@ -281,14 +282,21 @@ exports.setBlogSSL = async (req, res, next) => {
   }
 }
 
-exports.getContentRecs = (req, res) => {
+exports.getContentRecs = async (req, res, next) => {
   let { nouns } = req.body
   const { n } = req.body
   if (!nouns) {
     const { tags = {} } = req.blog
     nouns = Object.values(tags).map(t => t.name)
   }
-  if (nouns.length === 0) return res.json([])
+  if (nouns.length === 0) {
+    return res.json({ headlines: [], tweets: [] })
+  }
   const headlines = genHeadlines(nouns, n || undefined)
-  return res.json(headlines)
+  try {
+    const tweets = await searchTweets('', nouns)
+    return res.json({ headlines, tweets })
+  } catch (err) {
+    return next(err)
+  }
 }
