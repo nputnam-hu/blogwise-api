@@ -23,8 +23,10 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
       as: 'users',
       foreignKey: 'organizationId',
     })
+    Organization.hasMany(models.CalendarPost, {
+      as: 'calendarPosts',
+    })
     Organization.hasOne(models.Blog)
-    Organization.hasOne(models.Calendar)
   }
 
   return Organization
