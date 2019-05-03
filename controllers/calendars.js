@@ -1,44 +1,44 @@
 const moment = require('moment')
 const _ = require('lodash')
-const { Organization, Calendar, CalendarPost } = require('../models')
+const { Organization, CalendarPost } = require('../models')
 const errors = require('../errors')
 const searchTweets = require('../utils/searchTweets')
 
-exports.createCalendar = async (req, res, next) => {
-  const validationError = errors.missingFields(req.body, [
-    'startDate',
-    'endDate',
-    'users',
-  ])
-  if (validationError) return res.status(400).send(validationError)
+// exports.createCalendar = async (req, res, next) => {
+//   const validationError = errors.missingFields(req.body, [
+//     'startDate',
+//     'endDate',
+//     'users',
+//   ])
+//   if (validationError) return res.status(400).send(validationError)
 
-  const newCalendar = await Calendar.build({
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-  })
-  if (!newCalendar) {
-    return res.status(400).send('Could not create user')
-  }
+//   const newCalendar = await Calendar.build({
+//     startDate: req.body.startDate,
+//     endDate: req.body.endDate,
+//   })
+//   if (!newCalendar) {
+//     return res.status(400).send('Could not create user')
+//   }
 
-  try {
-    await newCalendar.save()
-    const org = await Organization.findById(req.user.organizationId)
-    org.setCalendar(newCalendar)
-    req.body.users.forEach(id => newCalendar.addUser(id))
-    return res.json(newCalendar)
-  } catch (err) {
-    return next(err)
-  }
-}
+//   try {
+//     await newCalendar.save()
+//     const org = await Organization.findById(req.user.organizationId)
+//     org.setCalendar(newCalendar)
+//     req.body.users.forEach(id => newCalendar.addUser(id))
+//     return res.json(newCalendar)
+//   } catch (err) {
+//     return next(err)
+//   }
+// }
 
 exports.getCalendarFromUser = async (req, res, next) => {
   try {
     const org = await Organization.findById(req.user.organizationId)
-    const calendar = await org.getCalendar()
-    if (!calendar) {
+    const calendarPosts = await org.getCalendarPosts()
+    if (!calendarPosts) {
       return res.json(null)
     }
-    req.calendar = calendar
+    req.calendar = calendarPosts
     return next()
   } catch (err) {
     return next(err)
