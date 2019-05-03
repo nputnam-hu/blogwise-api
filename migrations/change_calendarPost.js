@@ -3,7 +3,6 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
         queryInterface.removeColumn('Users', 'calendarId'),
-        queryInterface.removeColumn('CalendarPosts', 'userId'),
         queryInterface.addColumn('CalendarPosts', 'authorId', {
           type: Sequelize.UUID,
         }),
@@ -19,7 +18,7 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
         queryInterface.createTable('Calendars'),
-        queryInterface.removeColumn('CalendarPosts', 'userId'),
+        queryInterface.removeColumn('CalendarPosts', 'authorId'),
         queryInterface.removeColumn('CalendarPosts', 'OrganizationId'),
         queryInterface.addColumn('CalendarPosts', 'calendarId', {
           type: Sequelize.UUID,
