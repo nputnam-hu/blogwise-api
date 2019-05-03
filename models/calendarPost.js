@@ -21,5 +21,11 @@ module.exports = function defineCalendarPost(sequelize, DataTypes) {
     },
   })
 
+  CalendarPost.associate = function buildCalendars(models) {
+    CalendarPost.belongsTo(models.User, {
+      as: 'author',
+    })
+  }
+
   return CalendarPost
 }
