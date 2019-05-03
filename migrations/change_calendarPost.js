@@ -4,9 +4,17 @@ module.exports = {
       return Promise.all([
         queryInterface.addColumn('CalendarPosts', 'authorId', {
           type: Sequelize.UUID,
+          references: {
+            model: 'Users',
+            key: 'id',
+          },
         }),
         queryInterface.addColumn('CalendarPosts', 'OrganizationId', {
           type: Sequelize.UUID,
+          references: {
+            model: 'Organizations',
+            key: 'id',
+          },
         }),
         queryInterface.dropTable('Calendars'),
       ])
