@@ -215,7 +215,14 @@ router.route('/api/linkedin/generateurl').get(linkedin.generateUrl)
 
 router
   .route('/api/facebook/storetoken')
-  .post(auth.validateUser, facebook.storeFbToken, facebook.storePageToken)
+  .post(
+    auth.validateUser,
+    facebook.storeShortLivedFbToken,
+    facebook.generateLonglivedToken,
+    facebook.generateFacebookCode,
+    facebook.generateLongLivedTokenUsingCode,
+    facebook.storePageToken,
+  )
 
 router
   .route('/api/linkedin/storetoken')
