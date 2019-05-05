@@ -14,10 +14,16 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     twitterTokenSecret: {
       type: DataTypes.TEXT,
     },
+    facebookId: {
+      type: DataTypes.TEXT,
+    },
     facebookToken: {
       type: DataTypes.TEXT,
     },
     facebookPageToken: {
+      type: DataTypes.TEXT,
+    },
+    facebookPageId: {
       type: DataTypes.TEXT,
     },
     linkedinToken: {

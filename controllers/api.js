@@ -2,6 +2,56 @@ const { Organization } = require('../models')
 const fs = require('fs')
 const config = require('../config')
 const request = require('request')
+const Twitter = require('twitter')
+
+exports.twitterTest = async function(req, res) {
+  const org = await Organization.findById(req.user.organizationId)
+  const params = {}
+  const client = new Twitter({
+    consumer_key: config.twitter.consumer_key,
+    consumer_secret: config.twitter.consumer_secret,
+    access_token_key: org.twitterToken,
+    access_token_secret: org.twitterTokenSecret,
+  })
+
+  client
+    .get('account/verify_credentials.json', params)
+    .then(tweet => {
+      return res.json(tweet)
+    })
+    .catch(error => console.log(error))
+}
+
+exports.linkedinTest = async function(req, res) {
+  const org = await Organization.findById(req.user.organizationId)
+  request.get(
+    {
+      url: 'https://api.linkedin.com/v2/me',
+      headers: {
+        Authorization: `Bearer ${org.linkedinToken}`,
+      },
+    },
+    function(err, r, body) {
+      const parsed = JSON.parse(body)
+      return res.json(parsed)
+    },
+  )
+}
+
+exports.facebookTest = async function(req, res) {
+  const org = await Organization.findById(req.user.organizationId)
+  request.get(
+    {
+      url: `https://graph.facebook.com/${org.facebookId}?access_token=${
+        org.facebookToken
+      }`,
+    },
+    function(err, r, body) {
+      const parsed = JSON.parse(body)
+      return res.json(parsed)
+    },
+  )
+}
 
 exports.authToken = function(req, res) {
   request.post(
@@ -30,10 +80,10 @@ exports.accessToken = function(req, res, next) {
       oauth: {
         consumer_key: config.twitter.consumer_key,
         consumer_secret: config.twitter.consumer_secret,
-        token: req.query.oauth_token,
+        token: req.body.oauth_token,
       },
       form: {
-        oauth_verifier: req.query.oauth_verifier,
+        oauth_verifier: req.body.oauth_verifier,
       },
     },
     function(err, r, body) {
@@ -43,40 +93,54 @@ exports.accessToken = function(req, res, next) {
       const bodyString =
         '{ "' + body.replace(/&/g, '", "').replace(/=/g, '": "') + '"}'
       const parsedBody = JSON.parse(bodyString)
-      res.status(200).send(parsedBody)
+      req.token = parsedBody
+      return next()
     },
   )
 }
 exports.storeTwitterToken = async function(req, res) {
   const org = await Organization.findById(req.user.organizationId)
   await org.update({
-    twitterToken: req.body.oauth_token,
-    twitterTokenSecret: req.body.oauth_token_secret,
+    twitterToken: req.token.oauth_token,
+    twitterTokenSecret: req.token.oauth_token_secret,
   })
   return res.status(200).send(org)
 }
 
-exports.storeFbToken = async function(req, res) {
+exports.storeFbToken = async function(req, res, next) {
   const org = await Organization.findById(req.user.organizationId)
   await org.update({
-    facebookToken: req.body.accessToken,
+    facebookToken: req.body._token.accessToken,
+    facebookId: req.body._profile.id,
   })
-  return res.status(200).send(org)
+  req.org = org
+  return next()
 }
 
-exports.getPageToken = async function(req, res) {
-  const org = await Organization.findById(req.user.organizationId)
+exports.storePageToken = async function(req, res) {
+  const org = await Organization.findById(req.org.id)
   request.get(
     {
-      url: `https://graph.facebook.com/340782893308270?fields=access_token&access_token=${
-        org.facebookToken
-      }`,
+      url: `https://graph.facebook.com/${
+        org.facebookId
+      }/accounts?access_token=${org.facebookToken}`,
     },
-    async function(err, r, body) {
-      await org.update({
-        facebookPageToken: JSON.parse(body).access_token,
-      })
-      return res.status(200).send(org)
+    function(err, r, body) {
+      const parsed = JSON.parse(body)
+      request.get(
+        {
+          url: `https://graph.facebook.com/${
+            parsed.data[0].id
+          }?fields=access_token&access_token=${org.facebookToken}`,
+        },
+        async function(err, r, body) {
+          await org.update({
+            facebookPageToken: JSON.parse(body).access_token,
+            facebookPageId: JSON.parse(body).id,
+          })
+          return res.status(200).send(org)
+        },
+      )
     },
   )
 }
@@ -116,68 +180,51 @@ exports.linkedinToken = function(req, res) {
 }
 
 exports.sharefb = async function(req, res, next) {
-  const status = {
-    facebook: '',
-    twitter: '',
-    linkedin: '',
-  }
   const org = await Organization.findById(req.user.organizationId)
 
   req.options = req.body
-  req.status = status
   req.org = org
 
   if (req.body.facebook) {
+    console.log(req.body.link)
     request.post(
       {
-        url: `https://graph.facebook.com/340782893308270/feed?message=${
+        url: `https://graph.facebook.com/${org.facebookPageId}/feed?message=${
           req.body.text
         }&link=${req.body.link}&access_token=${org.facebookPageToken}`,
       },
       function(err, r, body) {
-        if (body.id) {
-          status.facebook = 'success'
-        } else {
-          status.facebook = 'failed to post'
-        }
+        console.log(body)
         return next()
       },
     )
+  } else {
+    return next()
   }
-  return next()
 }
 
 exports.sharetw = function(req, res, next) {
-  console.log(req)
   if (req.options.twitter) {
-    request.post(
-      {
-        url: `https://api.twitter.com/1.1/statuses/update.json?status=${
-          req.options.text
-        }\n${req.options.link}`,
-        oauth: {
-          consumer_key: config.twitter.consumer_key,
-          consumer_secret: config.twitter.consumer_secret,
-          token: req.org.twitterToken,
-          token_secret: req.org.twitterTokenSecret,
-        },
-      },
-      function(err, r, body) {
-        fs.writeFileSync('./try1.json', JSON.stringify(fs.writeFileSync))
-        if (body.created_at) {
-          req.status.twitter = 'success'
-        } else {
-          req.status.twitter = 'failed to post'
-        }
+    const params = { status: `${req.body.text} \n ${req.body.link}` }
+    const client = new Twitter({
+      consumer_key: config.twitter.consumer_key,
+      consumer_secret: config.twitter.consumer_secret,
+      access_token_key: req.org.twitterToken,
+      access_token_secret: req.org.twitterTokenSecret,
+    })
+
+    client
+      .post('statuses/update.json', params)
+      .then(tweet => {
         return next()
-      },
-    )
+      })
+      .catch(error => console.log(error))
+  } else {
+    return next()
   }
-  return next()
 }
 
 exports.sharelk = function(req, res) {
-  const status = req.status
   const bodyobj = {
     author: `urn:li:person:${req.org.linkedinId}`,
     lifecycleState: 'PUBLISHED',
@@ -210,8 +257,7 @@ exports.sharelk = function(req, res) {
       body: JSON.stringify(bodyobj),
     },
     function(err, r, body) {
-      status.linkedin = 'success'
-      return res.send(status)
+      return res.json(body)
     },
   )
 }

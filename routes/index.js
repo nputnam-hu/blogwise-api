@@ -193,18 +193,14 @@ router
  */
 
 router.route('/api/twitter/reverse').post(api.authToken)
-router.route('/api/twitter').post(api.accessToken)
+
 router
-  .route('/api/twitter/storetoken')
-  .post(auth.validateUser, api.storeTwitterToken)
+  .route('/api/twitter')
+  .post(auth.validateUser, api.accessToken, api.storeTwitterToken)
 
 router
   .route('/api/facebook/storetoken')
-  .post(auth.validateUser, api.storeFbToken)
-
-router
-  .route('/api/facebook/pagetoken')
-  .post(auth.validateUser, api.getPageToken)
+  .post(auth.validateUser, api.storeFbToken, api.storePageToken)
 
 router
   .route('/api/linkedin/storetoken')
@@ -213,5 +209,9 @@ router
 router
   .route('/api/shareall')
   .post(auth.validateUser, api.sharefb, api.sharetw, api.sharelk)
+
+router.route('/api/twitter/identify').get(auth.validateUser, api.twitterTest)
+router.route('/api/linkedin/identify').get(auth.validateUser, api.linkedinTest)
+router.route('/api/facebook/identify').get(auth.validateUser, api.facebookTest)
 
 module.exports = router

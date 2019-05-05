@@ -37,12 +37,6 @@ module.exports = {
     consumer_secret:
       // process.env.TWITTER_CONSUMER_SECRET ||
       '8LQDt7sQVXrYYsdxLx6pWRTqkSTlVN204MtXoGgq1VdPVKd5BS',
-    access_token:
-      //process.env.TWITTER_ACCCESS_TOKEN_KEY ||
-      '1050449590800007169-zFx3ew3E8O5CDV7biN5rdVcFMwlHin',
-    access_token_secret:
-      //process.env.TWITTER_ACCCESS_TOKEN_SECRET ||
-      'DOCCSU82RSU0UcDzSUeOtcXMdLKl1kVO18ZM6HeVCzCF7',
     redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
   },
   facebook: {
