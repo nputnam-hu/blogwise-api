@@ -8,7 +8,9 @@ const s3 = require('../controllers/s3')
 const prodInstances = require('../controllers/prodInstances')
 const blogPosts = require('../controllers/blogPosts')
 const calendars = require('../controllers/calendars')
-const api = require('../controllers/api')
+const facebook = require('../controllers/facebook')
+const twitter = require('../controllers/twitter')
+const linkedin = require('../controllers/linkedin')
 const tipOfTheDay = require('../utils/tipOfTheDay')
 
 const router = express.Router()
@@ -188,30 +190,48 @@ router
 router
   .route('/instances/auto/:n')
   .post(auth.validateSuperAdmin, prodInstances.autoCreateInstances)
+
 /*
  * Social Media Routes
  */
 
-router.route('/api/twitter/reverse').post(api.authToken)
+router
+  .route('/api/twitter/reverse')
+  .post(twitter.twitterRequestTokenToAuthToken)
 
 router
   .route('/api/twitter')
-  .post(auth.validateUser, api.accessToken, api.storeTwitterToken)
+  .post(
+    auth.validateUser,
+    twitter.twitterGetAccessToken,
+    twitter.storeTwitterToken,
+  )
 
 router
   .route('/api/facebook/storetoken')
-  .post(auth.validateUser, api.storeFbToken, api.storePageToken)
+  .post(auth.validateUser, facebook.storeFbToken, facebook.storePageToken)
 
 router
   .route('/api/linkedin/storetoken')
-  .post(auth.validateUser, api.linkedinToken)
+  .post(auth.validateUser, linkedin.linkedinToken)
 
 router
   .route('/api/shareall')
-  .post(auth.validateUser, api.sharefb, api.sharetw, api.sharelk)
+  .post(
+    auth.validateUser,
+    facebook.uploadToFacebook,
+    twitter.uploadToTwitter,
+    linkedin.uploadToLinkedin,
+  )
 
-router.route('/api/twitter/identify').get(auth.validateUser, api.twitterTest)
-router.route('/api/linkedin/identify').get(auth.validateUser, api.linkedinTest)
-router.route('/api/facebook/identify').get(auth.validateUser, api.facebookTest)
+router
+  .route('/api/twitter/identify')
+  .get(auth.validateUser, twitter.twitterUserInfo)
+router
+  .route('/api/linkedin/identify')
+  .get(auth.validateUser, linkedin.linkedinUserInfo)
+router
+  .route('/api/facebook/identify')
+  .get(auth.validateUser, facebook.facebookUserInfo)
 
 module.exports = router

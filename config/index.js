@@ -30,24 +30,26 @@ module.exports = {
       logos: 'megaphone-logo-uploads',
     },
   },
-  twitter: {
-    consumer_key:
-      // process.env.TWITTER_CONSUMER_KEY ||
-      '46EOkfEGDuftWDE0vLRwOAJfp',
-    consumer_secret:
-      // process.env.TWITTER_CONSUMER_SECRET ||
-      '8LQDt7sQVXrYYsdxLx6pWRTqkSTlVN204MtXoGgq1VdPVKd5BS',
-    redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
+  twitterSearch: {
+    consumer_key: process.env.TWITTER_CONSUMER_KEY || null,
+    consumer_secret: process.env.TWITTER_CONSUMER_SECRET || null,
+    access_token_key: process.env.TWITTER_ACCCESS_TOKEN_KEY || null,
+    access_token_secret: process.env.TWITTER_ACCCESS_TOKEN_SECRET || null,
+  },
+  twitterUpload: {
+    consumer_key: process.env.TWITTER_SEARCH_CONSUMER_KEY || null,
+    consumer_secret: process.env.TWITTER_SEARCH_CONSUMER_SECRET || null,
+    redirect_uri: process.env.TWITTER_SEARCH_REDIRECT_URI || null,
   },
   facebook: {
-    app_id: '1078110902387157',
-    app_secret: 'd9012f6c769ff7f3f8edca855bc54296',
-    redirect_uri: 'https%3A%2F%2Fwww.blogwise.co/',
+    app_id: process.env.FACEBOOK_APP_ID || null,
+    app_secret: process.env.FACEBOOK_APP_SECRET || null,
+    redirect_uri: process.env.FACEBOOK_REDIRECT_URI || null,
   },
   linkedin: {
-    client_id: '78lfgcpfr5idxn',
-    client_secret: 'fMC2Eq6BLjVUaE0e',
-    redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
+    client_id: process.env.LINKEDIN_CLIENT_ID || null,
+    client_secret: process.env.LINKEDIN_CLIENT_SECRET || null,
+    redirect_uri: process.env.LINKEDIN_REDIRECT_URI || null,
   },
   stripeApiToken: process.env.STRIPE_API_TOKEN || null,
   netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,

@@ -2,7 +2,7 @@
 const WordPOS = require('wordpos')
 const Twitter = require('twitter')
 const {
-  twitter: {
+  twitterSearch: {
     consumer_key,
     consumer_secret,
     access_token_key,
