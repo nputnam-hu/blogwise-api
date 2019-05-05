@@ -33,6 +33,10 @@ router
   .delete(auth.validateSuperAdmin, organizations.deleteOrganization)
 
 router
+  .route('/organizations/row')
+  .get(auth.validateAdmin, organizations.getOrganizationRow)
+
+router
   .route('/organizations/users')
   .get(auth.validateAdmin, organizations.getOrganizationUsers)
 

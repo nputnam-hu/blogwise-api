@@ -40,6 +40,15 @@ exports.getOrganization = async (req, res, next) => {
   }
 }
 
+exports.getOrganizationRow = async (req, res, next) => {
+  try {
+    const org = await Organization.findById(req.user.organizationId)
+    return res.json(org)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 exports.updateOrganization = async (req, res, next) => {
   try {
     await Organization.update(req.body, {
