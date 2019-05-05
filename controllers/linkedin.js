@@ -2,6 +2,17 @@ const { Organization } = require('../models')
 const config = require('../config')
 const request = require('request')
 
+exports.generateUrl = function(req, res) {
+  return res.json({
+    url: `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${
+      config.linkedin.client_id
+    }&redirect_uri=${
+      config.linkedin.redirect_uri
+    }&state=noahisabasedgod&scope=r_liteprofile%20r_emailaddress%20w_member_social
+  `,
+  })
+}
+
 exports.linkedinUserInfo = async function(req, res) {
   const org = await Organization.findById(req.user.organizationId)
   request.get(

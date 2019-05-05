@@ -207,6 +207,8 @@ router
     twitter.storeTwitterToken,
   )
 
+router.route('/api/linkedin/generateurl').get(linkedin.generateUrl)
+
 router
   .route('/api/facebook/storetoken')
   .post(auth.validateUser, facebook.storeFbToken, facebook.storePageToken)
