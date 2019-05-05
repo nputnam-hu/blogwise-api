@@ -8,8 +8,7 @@ exports.generateUrl = function(req, res) {
       config.linkedin.client_id
     }&redirect_uri=${
       config.linkedin.redirect_uri
-    }&state=noahisabasedgod&scope=r_liteprofile%20r_emailaddress%20w_member_social
-  `,
+    }&state=noahisabasedgod&scope=r_liteprofile%20r_emailaddress%20w_member_social`,
   })
 }
 
