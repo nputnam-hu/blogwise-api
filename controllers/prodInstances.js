@@ -1,12 +1,12 @@
 const { ProdInstance, Blog } = require('../models')
-const { sendAlertEmail } = require('../utils')
+const { sendAlertEmail, createNewSite } = require('../utils')
 const errors = require('../errors')
 const client = require('../config/netlify')
 const normalizeUrl = require('normalize-url')
 
 exports.getOpenInstance = async (req, res, next) => {
   try {
-    const openInstances = await ProdInstance.findAll({
+    let openInstances = await ProdInstance.findAll({
       where: { isTaken: false },
     })
     // check how many open instances there are
@@ -15,10 +15,47 @@ exports.getOpenInstance = async (req, res, next) => {
         'There are 0 Open Instances!!!!',
         `${Date.now()} — Big Problem`,
       )
-      return res
-        .status(500)
-        .send(errors.makeError(errors.err.NO_OPEN_PROD_INSTANCE))
+      const newSite = createNewSite()
+      const hookOptions = {
+        site_id: newSite.site_id,
+        buildHook: {},
+      }
+
+      const newBuildHook = await client.createSiteBuildHook(hookOptions)
+
+      await ProdInstance.create({
+        buildHookUrl: newBuildHook.url,
+        netlifyUrl: normalizeUrl(site.url, { forceHttps: true }),
+      })
+
+      openInstances = await ProdInstance.findAll({
+        where: { isTaken: false },
+      })
+    } else if (openInstances.length < 10) {
+      while (openInstances.length < 10) {
+        const newSite = createNewSite()
+        const hookOptions = {
+          site_id: newSite.site_id,
+          buildHook: {},
+        }
+
+        const newBuildHook = await client.createSiteBuildHook(hookOptions)
+
+        await ProdInstance.create({
+          buildHookUrl: newBuildHook.url,
+          netlifyUrl: normalizeUrl(site.url, { forceHttps: true }),
+        })
+
+        openInstances = await ProdInstance.findAll({
+          where: { isTaken: false },
+        })
+
+        setTimeout(function() {
+          console.log('new site created')
+        }, 1500)
+      }
     }
+
     sendAlertEmail(
       `A new user has created an account! There are ${openInstances.length -
         1} open instances left. User name: ${req.body.user.name}, email: ${
@@ -56,6 +93,7 @@ exports.createInstance = async (req, res, next) => {
   await Promise.all(promises)
   return res.sendStatus(200)
 }
+
 exports.getInstance = async (req, res, next) => {
   const {
     blog: { id },
