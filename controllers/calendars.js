@@ -92,6 +92,18 @@ exports.updatePost = async (req, res, next) => {
   }
 }
 
+exports.deletePost = async (req, res, next) => {
+  const validationError = errors.missingFields(req.body, ['id'])
+  if (validationError) return res.status(400).send(validationError)
+
+  try {
+    await CalendarPost.destroy({ where: { id: req.body.id } })
+    return res.status(200).send()
+  } catch (err) {
+    return next(err)
+  }
+}
+
 exports.getNextPostDue = async (req, res, next) => {
   try {
     const post = await CalendarPost.findOne({

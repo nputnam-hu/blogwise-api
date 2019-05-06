@@ -154,6 +154,7 @@ router
   .get(auth.validateUser, calendars.getCalendarFromUser)
   .post(auth.validateUser, calendars.scheduleNewPost)
   .put(auth.validateUser, calendars.updatePost)
+  .delete(auth.validateUser, calendars.deletePost)
 
 router
   .route('/calendars/posts/next')
