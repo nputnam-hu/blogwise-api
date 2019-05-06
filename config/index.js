@@ -49,7 +49,9 @@ module.exports = {
   linkedin: {
     client_id: process.env.LINKEDIN_CLIENT_ID || null,
     client_secret: process.env.LINKEDIN_CLIENT_SECRET || null,
-    redirect_uri: process.env.LINKEDIN_REDIRECT_URI || null,
+    redirect_uri: 'http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial',
+    //process.env.LINKEDIN_REDIRECT_URI || null,
+    //http%3A%2F%2Flocalhost%3A3000%2Fdashboard%2Fsocial
   },
   stripeApiToken: process.env.STRIPE_API_TOKEN || null,
   netlifyApiToken: process.env.NETLIFY_API_TOKEN || null,

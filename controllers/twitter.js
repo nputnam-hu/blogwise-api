@@ -62,6 +62,7 @@ exports.twitterGetAccessToken = function(req, res, next) {
       const bodyString =
         '{ "' + body.replace(/&/g, '", "').replace(/=/g, '": "') + '"}'
       const parsedBody = JSON.parse(bodyString)
+      console.log(parsedBody)
       req.token = parsedBody
       return next()
     },

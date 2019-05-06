@@ -32,6 +32,9 @@ module.exports = function defineOrginization(sequelize, DataTypes) {
     linkedinId: {
       type: DataTypes.TEXT,
     },
+    linkedinTokenExpirationDate: {
+      type: DataTypes.DATE,
+    },
     surveyAnswer: {
       type: DataTypes.STRING,
     },

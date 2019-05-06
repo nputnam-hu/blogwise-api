@@ -1,6 +1,7 @@
 const { Organization } = require('../models')
 const config = require('../config')
 const request = require('request')
+const moment = require('moment')
 
 exports.generateUrl = function(req, res) {
   return res.json({
@@ -32,6 +33,10 @@ exports.linkedinUserInfo = async function(req, res) {
 }
 
 exports.linkedinToken = function(req, res) {
+  const exprDate = moment()
+    .add(60, 'days')
+    .format()
+    .toString()
   request.post(
     {
       url: `https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=${
@@ -48,6 +53,8 @@ exports.linkedinToken = function(req, res) {
         return res.send(500, { message: err.message })
       }
       const parsedBody = JSON.parse(body)
+      console.log(parsedBody)
+      console.log(exprDate)
       const org = await Organization.findById(req.user.organizationId)
       request.get(
         {
@@ -56,13 +63,15 @@ exports.linkedinToken = function(req, res) {
             Authorization: `Bearer ${parsedBody.access_token}`,
           },
         },
-        async function(err, r, body) {
+        async function(err, r, body2) {
           if (err) {
             return res.send(500, { message: err.message })
           }
+          const secondParsed = JSON.parse(body2)
           await org.update({
+            linkedinTokenExpirationDate: exprDate,
             linkedinToken: parsedBody.access_token,
-            linkedinId: JSON.parse(body).id,
+            linkedinId: secondParsed.id,
           })
           return res.status(200).send(org)
         },
