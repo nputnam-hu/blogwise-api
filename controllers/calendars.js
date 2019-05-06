@@ -18,7 +18,7 @@ exports.getCalendarFromUser = async (req, res, next) => {
       title: post.title,
       dueDate: post.dueDate,
       tags: post.tags,
-      author: post.authorId,
+      authorId: post.authorId,
       relevantTweets: post.relevantTweets,
     }))
     return res.json(labeledPosts)
