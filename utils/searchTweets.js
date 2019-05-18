@@ -29,6 +29,7 @@ module.exports = (title, tags) =>
           .map(t => `#${t.toLowerCase().replace(/ /g, '')}`)
           .join(' OR ')} filter:links`,
         result_type: 'popular',
+        lang: 'en',
         count: 10,
       })
       const cleanedTweets = tweets.statuses.map(tweet => ({
