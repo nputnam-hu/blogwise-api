@@ -113,6 +113,10 @@ router
   .route('/blogs/migrate')
   .post(auth.validateSuperAdmin, blogs.migrateBlogDataOver)
 
+router
+  .route('/blogs/googleAnalyticsToken')
+  .put(auth.validateUser, blogs.getBlogFromUser, blogs.setGoogleAnalyticsToken)
+
 /*
  * BlogPost Routes
  */
