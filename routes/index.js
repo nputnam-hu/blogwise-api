@@ -115,7 +115,12 @@ router
 
 router
   .route('/blogs/googleAnalyticsToken')
-  .put(auth.validateUser, blogs.getBlogFromUser, blogs.setGoogleAnalyticsToken)
+  .put(
+    auth.validateUser,
+    blogs.getBlogFromUser,
+    blogs.setGoogleAnalyticsToken,
+    blogs.getBlog,
+  )
 
 /*
  * BlogPost Routes

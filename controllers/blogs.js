@@ -310,7 +310,8 @@ exports.setGoogleAnalyticsToken = async (req, res, next) => {
       { googleAnalyticsToken, hasUpdates: true },
       { where: { id: blog.id } },
     )
-    return res.json(blog)
+    req.blog = await Blog.findById(blog.id)
+    return next()
   } catch (err) {
     return next(err)
   }
