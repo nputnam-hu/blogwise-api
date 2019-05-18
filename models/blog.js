@@ -73,6 +73,9 @@ module.exports = function defineBlog(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    googleAnalyticsToken: {
+      type: DataTypes.STRING,
+    },
   })
 
   Blog.associate = function buildBlog(models) {

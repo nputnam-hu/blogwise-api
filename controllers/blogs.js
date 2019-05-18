@@ -121,6 +121,7 @@ async function commitJSON(id, user, type) {
     token: user.token,
     apiUrl: 'https://megaphone-api-prod.herokuapp.com',
     hasBeenInitialized: true,
+    googleAnalyticsToken: blog.googleAnalyticsToken || '',
   }
   await axios.post(
     `${prodInstance.buildHookUrl}?${qs.stringify({
@@ -296,6 +297,21 @@ exports.getContentRecs = async (req, res, next) => {
   try {
     const tweets = await searchTweets('', nouns)
     return res.json({ headlines, tweets })
+  } catch (err) {
+    return next(err)
+  }
+}
+
+exports.setGoogleAnalyticsToken = async (req, res, next) => {
+  const { googleAnalyticsToken } = req.body
+  const { blog } = req
+  try {
+    await Blog.update(
+      { googleAnalyticsToken, hasUpdates: true },
+      { where: { id: blog.id } },
+    )
+    req.blog = await Blog.findById(blog.id)
+    return next()
   } catch (err) {
     return next(err)
   }
