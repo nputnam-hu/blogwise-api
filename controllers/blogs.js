@@ -301,18 +301,3 @@ exports.getContentRecs = async (req, res, next) => {
     return next(err)
   }
 }
-
-exports.setGoogleAnalyticsToken = async (req, res, next) => {
-  const { googleAnalyticsToken } = req.body
-  const { blog } = req
-  try {
-    await Blog.update(
-      { googleAnalyticsToken, hasUpdates: true },
-      { where: { id: blog.id } },
-    )
-    req.blog = await Blog.findById(blog.id)
-    return next()
-  } catch (err) {
-    return next(err)
-  }
-}
