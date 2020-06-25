@@ -1,0 +1,17 @@
+{
+  "plugins": ["security"],
+  "extends": [
+    "airbnb-base",
+    "plugin:security/recommended",
+    "plugin:node/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "node": true
+  },
+  "parser": "esprima",
+  "rules": {
+    "semi": ["error", "never"],
+    "import/first": 0
+  }
+}

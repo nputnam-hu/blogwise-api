@@ -1,0 +1,44 @@
+{
+  "instances": [
+    {
+      "githubRepo": "blogwise-template-1-01",
+      "netlifyUrl": "https://nervous-ardinghelli-e6d896.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-02",
+      "netlifyUrl": "https://zen-shaw-e76437.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-03",
+      "netlifyUrl": "https://upbeat-jepsen-3acaee.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-04",
+      "netlifyUrl": "https://goofy-jones-19a695.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-05",
+      "netlifyUrl": "https://elated-liskov-c6a5d8.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-06",
+      "netlifyUrl": "https://loving-sammet-ce48f8.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-07",
+      "netlifyUrl": "https://gracious-fermat-060c5e.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-08",
+      "netlifyUrl": "https://fervent-euclid-6baa7d.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-09",
+      "netlifyUrl": "https://laughing-franklin-385033.netlify.com"
+    },
+    {
+      "githubRepo": "blogwise-template-1-10",
+      "netlifyUrl": "https://quirky-davinci-9eec84.netlify.com"
+    }
+  ]
+}
